@@ -33,7 +33,7 @@ type
     VisualBoard: array[1..BoardSize,1..BoardSize] of TImage;
     SolutionCounter: integer;             {счЄтчик количества решений}
     board: TBoard;          {собственно доска, тип объ€влен в модуле Stacks}
-    Queue: pStack;              {собственно указатель на стек. тип объ€влен в модуле Stacks}
+    Queue: PQueue;              {собственно указатель на стек. тип объ€влен в модуле Stacks}
     CurrQueen: byte;        {текущий расставл€емый ферзь}
     itr: byte;              {переменна€-итератор (нужна дл€ поиска места установки нового ферз€)}
     CurrAction: TQueenAction;   {действие, выполн€емой в данный момент}
