@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Grids, ExtCtrls, Queues;
+  Dialogs, StdCtrls, Grids, ExtCtrls, Stacks;
 
   type
   TQueenAction = (GetBoard, CheckingIfSolution, FindPlaceToNewQueen);
@@ -24,14 +24,14 @@ uses
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
   private
-    SolutionCounter: integer;             {счЄтчик количества решений}
-    board: TBoard;          {собственно доска, тип объ€влен в модуле Queue}
-    Queue: PQueue;              {собственно указатель на стек. тип объ€влен в модуле Stacks}
+    k: integer;             {счЄтчик количества решений}
+    board: TBoard;          {собственно доска, тип объ€влен в модуле Stacks}
+    S: pStack;              {собственно указатель на стек. тип объ€влен в модуле Stacks}
     CurrQueen: byte;        {текущий расставл€емый ферзь}
     itr: byte;              {переменна€-итератор (нужна дл€ поиска места установки нового ферз€)}
     CurrAction: TQueenAction;   {действие, выполн€емой в данный момент}
     FirstIteration: boolean;    {флаг, указывающий - будет ли следующа€ выполн€ема€ итераци€ - первой во всЄм бектрекинге}
-    function ClearBoard: TBoard;      {функци€ очищает доску}
+    function GetFreeBoard: TBoard;      {функци€ возвращает полностью пустую доску}
     procedure SetQueenOnBoard(var a: TBoard; x,y: byte);        {процедура помещает ферз€ на доску в коодинаты (x;y) и помечает клетки доски, наход€щиес€ по ударом этого ферз€}
     procedure DrawBoard(board: TBoard);                         {вывести состо€ние доски в Grid}
     function IterateS: boolean;                                 {собственно сама ключева€ процедура}
@@ -66,15 +66,15 @@ begin
     end;
 end;
 
-function TForm1.ClearBoard: TBoard;
+function TForm1.GetFreeBoard: TBoard;
 var
   i,j: byte;
-  board: TBoard;
+  b: TBoard;
 begin
   for i:= 1 to BoardSize do
     for J:= 1 to BoardSize do
-      board[i,j]:=cFree;
-  result:=board;
+      b[i,j]:=cFree;
+  result:=b;
 end;
 
 
@@ -137,14 +137,14 @@ begin
   begin
     timer1.enabled:=False;
     LogMemo.Lines.Add('EndCycle');
-    LogMemo.Lines.Add(Format('%d solutions',[SolutionCounter]));
+    LogMemo.Lines.Add(Format('%d solutions',[k]));
   end;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   FirstIteration:=True;
-  SolutionCounter:=0;
+  k:=0;
 end;
 
 procedure TForm1.Button2Click(Sender: TObject);
@@ -152,7 +152,7 @@ begin
   if IterateS then
   begin
     LogMemo.Lines.Add('EndCycle');
-    LogMemo.Lines.Add(Format('%d solutions',[SolutionCounter]));
+    LogMemo.Lines.Add(Format('%d solutions',[k]));
   end;
 end;
 
@@ -169,11 +169,12 @@ begin
 end;
 
 function TForm1.IterateS: boolean;
-{процедура, выполн€юща€ один шаг итерационного бектрекинга с очередью.
- ¬ папке backtracking-pascal, в файле btr.pas расписаны процедуры, послужившие
+{процедура, выполн€юща€ один шаг итерационного бектрекинга со стеком
+ в папке backtracking-pascal, в файле btr.pas расписаны процедуры, послужившие
  основой создани€ этой процедуры.
 
  возвращает True, если цикл завершЄн}
+//аналогична€ процедура с использваонием очереди будет более приемлемой
 var
 	copy: TBoard;
 begin
@@ -181,8 +182,8 @@ begin
 	if FirstIteration then
 	begin
     LogMemo.Lines.Add('It''s a First Iteration');
-    CreateQueue(Queue);
-    PushQueue(Queue, 1, ClearBoard);
+    CreateStack(S);
+    PushStack(S, 1, GetFreeBoard);
     CurrAction:=GetBoard;
     FirstIteration:=False;
 	end;
@@ -191,13 +192,13 @@ begin
 		GetBoard:
 			begin
         LogMemo.Lines.Add('Getting board from Stack');
-				if Queue=nil then
+				if S=nil then
 				begin
           LogMemo.Lines.Add('quiting from cycle');
 					result:=True;
 					exit;
 				end;
-				PopQueue(Queue, currQueen, board);
+				PopStack(S, currQueen, board);
         DrawBoard(board);            //необ€зательна€ строка кажись
 				currAction:=CheckingIfSolution;
 				itr:=1;
@@ -210,7 +211,7 @@ begin
 				begin
 					LogMemo.Lines.Add('we fucking have new solution');
           timer1.Enabled:=False; //выключить таймер при нахождении решени€
-          inc(SolutionCounter);
+          inc(k);
           currAction:=GetBoard;
 				end
 				else
@@ -218,7 +219,7 @@ begin
 			end;
 
 		FindPlaceToNewQueen:
-			begin {what about skiping this part in timer and just show a free place to set?}
+			begin
         LogMemo.Lines.Add('Finding new place for the '+inttostr(CurrQueen)+'th queen');
 				if board[currQueen, itr] = cFree then
 				begin
@@ -226,7 +227,7 @@ begin
 					copy:=board;
 					SetQueenOnBoard(copy, currQueen, itr);
           //{}DrawBoard(copy);
-					PushQueue(Queue, CurrQueen + 1, copy);
+					PushStack(S, CurrQueen + 1, copy);
 				end;
 				if itr=BoardSize then
 					CurrAction:=GetBoard

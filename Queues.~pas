@@ -61,8 +61,7 @@ implementation
       head:= head^.next;  
     x:= head^.next^.x;
     board:= head^.next^.board;
-    dispose (head^.next);
-    head^.next:= nil;			
+    dispose (head^.next);			
 	end;
 		
 	{procedure WriteQueue(tail: pQueue);

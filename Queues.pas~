@@ -2,9 +2,8 @@ unit queues;
 
 interface
 
-const
-  BoardSize = 8;
-
+ const
+ BoardSize = 8;
  type
 	TCell = (cQueen, cUnderAttack, cFree);
 	TBoard = array[1..BoardSize,1..BoardSize] of TCell;
@@ -23,13 +22,13 @@ const
 implementation
 
 	procedure CreateQueue(var tail: pQueue);
-	{создание пустой очереди}
+	{СЃРѕР·РґР°РЅРёРµ РїСѓСЃС‚РѕР№ РѕС‡РµСЂРµРґРё}
 	begin
-    tail:= nil;
+		tail:=nil;
 	end;
 	
 	procedure PushQueue(var tail: pQueue;  x: byte; board: TBoard);
-	{добавление элемента в конец очереди}
+	{РґРѕР±Р°РІР»РµРЅРёРµ СЌР»РµРјРµРЅС‚Р° РІ РєРѕРЅРµС† РѕС‡РµСЂРµРґРё}
 	var
 		temp: pQueue;
 	begin
@@ -37,32 +36,42 @@ implementation
 		temp^.x:=x;
 		temp^.board:=board;
 		temp^.next:=tail;
-		tail:=temp;
+		tail:=temp;		
 	end;
 	
 	procedure PopQueue(var tail: pQueue; var  x: byte; var board: TBoard);
-	{удаление элемента из начала очереди}
-	//ололо работает? не upd: frmn работает, работает
+	{СѓРґР°Р»РµРЅРёРµ СЌР»РµРјРµРЅС‚Р° РёР· РЅР°С‡Р°Р»Р° РѕС‡РµСЂРµРґРё}
+	{РѕР»РѕР»Рѕ СЂР°Р±РѕС‚Р°РµС‚? РЅРµ}
 	var
-    head: pQueue;
+		temp: pQueue;
 	begin
-		if tail = nil then
-		  Exit;
-    if tail^.next=nil then
-    begin
-      x:=tail^.x;
-      board:=tail^.board;
-      dispose(tail);
-      tail:=nil;
-      Exit;
-    end;
-    head:= tail;
-    while head^.next^.next <> nil do
-      head:= head^.next;  
-    x:= head^.next^.x;
-    board:= head^.next^.board;
-    dispose (head^.next);
-    head^.next:= nil;			
+		if tail<>nil then
+		begin
+			{temp:=tail;
+			while tail^.next<>nil do
+				tail:=tail^.next;
+			data:=tail^.data;
+			writeln('popping - ',data);
+			dispose(tail);
+			tail:=temp;		}
+			if tail^.next=nil then
+			begin
+				x:=tail^.x;
+				board:=tail^.board;
+				dispose(tail);
+				tail:=nil;
+			end
+			else
+			begin
+				temp:=tail;
+				while tail^.next^.next<>nil do
+					tail:=tail^.next;
+				x:=tail^.next^.x;
+				board:=tail^.next^.board;
+				tail^.next:=nil;
+				tail:=temp;
+			end;				
+		end;
 	end;
 		
 	{procedure WriteQueue(tail: pQueue);
