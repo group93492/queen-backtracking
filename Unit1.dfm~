@@ -1,8 +1,15 @@
 object Form1: TForm1
+<<<<<<< HEAD
+  Left = 192
+  Top = 101
+  Width = 837
+  Height = 623
+=======
   Left = 262
   Top = 236
   Width = 1181
   Height = 756
+>>>>>>> 94bd0681c5283f806584ea2994ce129c58e740f3
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -33,8 +40,13 @@ object Form1: TForm1
   end
   object LogMemo: TMemo
     Left = 0
+<<<<<<< HEAD
+    Top = 373
+    Width = 812
+=======
     Top = 509
     Width = 1173
+>>>>>>> 94bd0681c5283f806584ea2994ce129c58e740f3
     Height = 220
     Align = alBottom
     ScrollBars = ssVertical

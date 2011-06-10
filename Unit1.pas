@@ -4,9 +4,13 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Grids, ExtCtrls, Queues;
+  Dialogs, StdCtrls, Grids, ExtCtrls, Queues, Jpeg;
 
-  type
+const
+  _CellWidth = 60;
+  _CellHeight = 60;
+
+type
   TQueenAction = (GetBoard, CheckingIfSolution, FindPlaceToNewQueen);
 
   TForm1 = class(TForm)
@@ -18,15 +22,18 @@ uses
     Button3: TButton;
     Label1: TLabel;
     Label2: TLabel;
+    BoardPanel: TPanel;
     procedure Button1Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
+    VisualBoard: array[1..BoardSize,1..BoardSize] of TImage;
     SolutionCounter: integer;             {счЄтчик количества решений}
-    board: TBoard;          {собственно доска, тип объ€влен в модуле Queue}
-    Queue: PQueue;              {собственно указатель на стек. тип объ€влен в модуле Stacks}
+    board: TBoard;          {собственно доска, тип объ€влен в модуле Stacks}
+    Queue: pStack;              {собственно указатель на стек. тип объ€влен в модуле Stacks}
     CurrQueen: byte;        {текущий расставл€емый ферзь}
     itr: byte;              {переменна€-итератор (нужна дл€ поиска места установки нового ферз€)}
     CurrAction: TQueenAction;   {действие, выполн€емой в данный момент}
@@ -49,10 +56,15 @@ implementation
 { TForm1 }
 
 procedure TForm1.DrawBoard(board: TBoard);
+const
+  GlyphDir = 'glyph\';
 var
   i,j: byte;
+  BlackCell: byte;
+  FileName: string;
   c: char;
 begin
+  {output board into stringgrid}
   for j:=1 to BoardSize do
     for i:=1 to BoardSize do
     begin
@@ -63,6 +75,19 @@ begin
         else c:='O';
       end;
       BoardGrid.Cells[i-1, j-1]:=c;
+    end;
+
+  {output board into BoardPanel}
+  for i:=1 to BoardSize do
+    for j:=1 to BoardSize do
+    begin
+      BlackCell:= ((i+j) mod 2);
+      case board[i,j] of
+        cQueen: FileName:= Format('queen-%d.jpg',[BlackCell]);
+        cFree: FileName:= Format('free-%d.jpg',[BlackCell]);
+        cUnderAttack: FileName:= Format('underattack-%d.jpg',[BlackCell]);
+      end;
+      VisualBoard[i,j].Picture.LoadFromFile(GlyphDir + FileName);
     end;
 end;
 
@@ -142,9 +167,27 @@ begin
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  i,j: byte;
 begin
   FirstIteration:=True;
   SolutionCounter:=0;
+  BoardPanel.Width:= BoardSize * _CellWidth;
+  BoardPanel.Height:= BoardSize * _CellHeight;
+  for i:=1 to BoardSize do
+    for j:=1 to BoardSize do
+      begin
+        VisualBoard[i,j]:=TImage.Create(self);
+        with VisualBoard[i,j] do
+        begin
+          Parent:=BoardPanel;
+          Left:= (j-1)*_CellWidth;
+          Top:= (i-1)*_CellHeight;
+          Width:= _CellWidth;
+          Height:= _CellHeight;
+          AutoSize:= True;
+        end;
+      end;
 end;
 
 procedure TForm1.Button2Click(Sender: TObject);
@@ -239,6 +282,15 @@ begin
   //DrawBoard(board);
   LogMemo.Lines.Add('</Iteration>');
   result:=False;
+end;
+
+procedure TForm1.FormDestroy(Sender: TObject);
+var
+  i,j: byte;
+begin
+  for i:=1 to BoardSize do
+    for j:=1 to BoardSize do
+      VisualBoard[i,j].Free;
 end;
 
 end.
