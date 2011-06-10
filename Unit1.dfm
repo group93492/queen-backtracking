@@ -1,8 +1,8 @@
 object Form1: TForm1
-  Left = 192
-  Top = 137
-  Width = 837
-  Height = 623
+  Left = 262
+  Top = 236
+  Width = 1181
+  Height = 756
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -12,6 +12,7 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -32,8 +33,8 @@ object Form1: TForm1
   end
   object LogMemo: TMemo
     Left = 0
-    Top = 376
-    Width = 829
+    Top = 509
+    Width = 1173
     Height = 220
     Align = alBottom
     ScrollBars = ssVertical
@@ -60,8 +61,8 @@ object Form1: TForm1
     TabOrder = 1
   end
   object Button1: TButton
-    Left = 368
-    Top = 40
+    Left = 352
+    Top = 32
     Width = 177
     Height = 49
     Caption = #1079#1072#1087#1091#1089#1090#1080#1090#1100' '#1074#1099#1087#1086#1083#1085#1077#1085#1080#1077' '#1080#1090#1077#1088#1072#1094#1080#1081'  '#1087#1086' '#1090#1072#1081#1084#1077#1088#1091
@@ -70,8 +71,8 @@ object Form1: TForm1
     OnClick = Button1Click
   end
   object Button2: TButton
-    Left = 400
-    Top = 96
+    Left = 384
+    Top = 88
     Width = 113
     Height = 49
     Caption = #1074#1099#1087#1086#1083#1085#1080#1090#1100' '#1086#1076#1085#1091' '#1080#1090#1077#1088#1072#1094#1080#1102
@@ -80,8 +81,8 @@ object Form1: TForm1
     OnClick = Button2Click
   end
   object Button3: TButton
-    Left = 392
-    Top = 153
+    Left = 376
+    Top = 145
     Width = 123
     Height = 71
     Caption = #1074#1099#1087#1086#1083#1085#1080#1090#1100' '#1080#1090#1077#1088#1072#1094#1080#1080' '#1076#1086' '#1089#1072#1084#1086#1075#1086' '#1082#1086#1085#1094#1072
@@ -89,11 +90,18 @@ object Form1: TForm1
     WordWrap = True
     OnClick = Button3Click
   end
+  object BoardPanel: TPanel
+    Left = 552
+    Top = 16
+    Width = 465
+    Height = 465
+    TabOrder = 5
+  end
   object Timer1: TTimer
     Enabled = False
-    Interval = 50
+    Interval = 100
     OnTimer = Timer1Timer
-    Left = 560
-    Top = 48
+    Left = 512
+    Top = 104
   end
 end
