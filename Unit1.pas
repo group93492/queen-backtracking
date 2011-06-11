@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Grids, ExtCtrls, Queues, Jpeg;
+  Dialogs, StdCtrls, Grids, ExtCtrls, Stacks, Jpeg;
 
 const
   _CellWidth = 60;
@@ -33,7 +33,7 @@ type
     VisualBoard: array[1..BoardSize,1..BoardSize] of TImage;
     SolutionCounter: integer;             {счЄтчик количества решений}
     board: TBoard;          {собственно доска, тип объ€влен в модуле Stacks}
-    Queue: PQueue;              {собственно указатель на стек. тип объ€влен в модуле Stacks}
+    Stack: PStack;              {собственно указатель на стек. тип объ€влен в модуле Stacks}
     CurrQueen: byte;        {текущий расставл€емый ферзь}
     itr: byte;              {переменна€-итератор (нужна дл€ поиска места установки нового ферз€)}
     CurrAction: TQueenAction;   {действие, выполн€емой в данный момент}
@@ -212,7 +212,7 @@ begin
 end;
 
 function TForm1.IterateS: boolean;
-{процедура, выполн€юща€ один шаг итерационного бектрекинга с очередью.
+{процедура, выполн€юща€ один шаг итерационного бектрекинга со стеком.
  ¬ папке backtracking-pascal, в файле btr.pas расписаны процедуры, послужившие
  основой создани€ этой процедуры.
 
@@ -224,8 +224,8 @@ begin
 	if FirstIteration then
 	begin
     LogMemo.Lines.Add('It''s a First Iteration');
-    CreateQueue(Queue);
-    PushQueue(Queue, 1, ClearBoard);
+    CreateStack (Stack);
+    PushStack (Stack, 1, ClearBoard);
     CurrAction:=GetBoard;
     FirstIteration:=False;
 	end;
@@ -234,13 +234,13 @@ begin
 		GetBoard:
 			begin
         LogMemo.Lines.Add('Getting board from Stack');
-				if Queue=nil then
+				if Stack = nil then
 				begin
           LogMemo.Lines.Add('quiting from cycle');
 					result:=True;
 					exit;
 				end;
-				PopQueue(Queue, currQueen, board);
+				PopStack (Stack, currQueen, board);
         DrawBoard(board);            //необ€зательна€ строка кажись
 				currAction:=CheckingIfSolution;
 				itr:=1;
@@ -269,7 +269,7 @@ begin
 					copy:=board;
 					SetQueenOnBoard(copy, currQueen, itr);
           //{}DrawBoard(copy);
-					PushQueue(Queue, CurrQueen + 1, copy);
+					PushStack (Stack, CurrQueen + 1, copy);
 				end;
 				if itr=BoardSize then
 					CurrAction:=GetBoard
