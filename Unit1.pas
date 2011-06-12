@@ -4,11 +4,12 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Grids, ExtCtrls, Stacks, Jpeg;
+  Dialogs, StdCtrls, Grids, ExtCtrls, Stacks, Jpeg, Tree;
 
 const
   _CellWidth = 60;
   _CellHeight = 60;
+  BoardSize = 4;
 
 type
   TQueenAction = (GetBoard, CheckingIfSolution, FindPlaceToNewQueen);
@@ -23,6 +24,9 @@ type
     Label1: TLabel;
     Label2: TLabel;
     BoardPanel: TPanel;
+    Button4: TButton;
+    ScrollBox1: TScrollBox;
+    Image: TImage;
     procedure Button1Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -36,6 +40,7 @@ type
     Stack: PStack;              {собственно указатель на стек. тип объявлен в модуле Stacks}
     CurrQueen: byte;        {текущий расставляемый ферзь}
     itr: byte;              {переменная-итератор (нужна для поиска места установки нового ферзя)}
+    prevpos, prevqueen: integer; //позиция предыдущего ферзя на предыдущей линии (нужно для дерева)
     CurrAction: TQueenAction;   {действие, выполняемой в данный момент}
     FirstIteration: boolean;    {флаг, указывающий - будет ли следующая выполняемая итерация - первой во всём бектрекинге}
     function ClearBoard: TBoard;      {функция очищает доску}
@@ -188,6 +193,7 @@ begin
           AutoSize:= True;
         end;
       end;
+   Tree.ImageInit;
 end;
 
 procedure TForm1.Button2Click(Sender: TObject);
@@ -223,11 +229,14 @@ begin
   LogMemo.Lines.Add('<Iteration>');
 	if FirstIteration then
 	begin
-    LogMemo.Lines.Add('It''s a First Iteration');
+    LogMemo.Lines.Add ('It''s a First Iteration');
     CreateStack (Stack);
     PushStack (Stack, 1, ClearBoard);
-    CurrAction:=GetBoard;
-    FirstIteration:=False;
+    CurrAction:= GetBoard;
+    FirstIteration:= False;
+    prevpos:= 1;
+    prevqueen:= 1;
+    Draw (1, 1);
 	end;
 	
 	case CurrAction of
@@ -242,22 +251,22 @@ begin
 				end;
 				PopStack (Stack, currQueen, board);
         DrawBoard(board);            //необязательная строка кажись
-				currAction:=CheckingIfSolution;
-				itr:=1;
+				currAction:= CheckingIfSolution;
+				itr:= 1;
 			end;
 		
 		CheckingIfSolution:
 			begin
         LogMemo.Lines.Add('checking if new solution');
-				if currQueen = BoardSize+1 then	{we have a new solution, lets remind about it}
+				if currQueen = BoardSize + 1 then	{we have a new solution, lets remind about it}
 				begin
-					LogMemo.Lines.Add('we fucking have new solution');
-          timer1.Enabled:=False; //выключить таймер при нахождении решения
-          inc(SolutionCounter);
-          currAction:=GetBoard;
+					LogMemo.Lines.Add ('we fucking have new solution');
+          timer1.Enabled:= False; //выключить таймер при нахождении решения
+          inc (SolutionCounter);
+          currAction:= GetBoard;
 				end
 				else
-					currAction:=FindPlaceToNewQueen;
+					currAction:= FindPlaceToNewQueen;
 			end;
 
 		FindPlaceToNewQueen:
@@ -266,13 +275,18 @@ begin
 				if board[currQueen, itr] = cFree then
 				begin
           LogMemo.Lines.Add('Found place. Adding it to the Queue');
-					copy:=board;
+					copy:= board;
 					SetQueenOnBoard(copy, currQueen, itr);
           //{}DrawBoard(copy);
 					PushStack (Stack, CurrQueen + 1, copy);
+          if currQueen <= BoardSize then
+            Draw (currQueen, (prevpos - 1) * (BoardSize - currQueen + 1) + itr);
+          if prevqueen <> currQueen then
+            prevpos:= itr;
+          prevqueen:= currQueen;
 				end;
-				if itr=BoardSize then
-					CurrAction:=GetBoard
+				if itr = BoardSize then
+					CurrAction:= GetBoard
 				else
 					inc(itr);
 			end;

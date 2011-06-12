@@ -3,14 +3,14 @@ unit stacks;
 interface
  
  const
-	BoardSize = 8;
+	BoardSize = 4;
 
  type
 	TCell = (cQueen, cUnderAttack, cFree);
 	TBoard = array[1..BoardSize,1..BoardSize] of TCell;
 	pStack=^TStack;	
 	TStack = record
-       x: byte;
+       x, pos, level: byte;
        board: TBoard;
        next:pStack;
 	end;
@@ -47,7 +47,7 @@ implementation
 	begin
 		if top<>nil then			{если стек не пуст, то}
 		begin
-			temp:=top^.next;	{сохраняем стек, начиная со второго элемента}
+			temp:=top^.next;	{сохраняем стек, начиная со второго элемента от вершины}
 			x:=top^.x;				{считываем информацию}
 			board:=top^.board;
 			dispose(top);			{очищаем память от первого элемента}

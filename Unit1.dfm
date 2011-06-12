@@ -1,8 +1,8 @@
 object Form1: TForm1
-  Left = 262
-  Top = 236
+  Left = 196
+  Top = 146
   Width = 1181
-  Height = 756
+  Height = 722
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -16,8 +16,8 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 24
-    Top = 360
+    Left = 4
+    Top = 465
     Width = 19
     Height = 13
     Caption = #1051#1086#1075
@@ -33,8 +33,8 @@ object Form1: TForm1
   end
   object LogMemo: TMemo
     Left = 0
-    Top = 509
-    Width = 1173
+    Top = 481
+    Width = 1156
     Height = 220
     Align = alBottom
     ScrollBars = ssVertical
@@ -96,6 +96,27 @@ object Form1: TForm1
     Width = 465
     Height = 465
     TabOrder = 5
+  end
+  object Button4: TButton
+    Left = 55
+    Top = 400
+    Width = 75
+    Height = 25
+    Caption = 'Button4'
+    TabOrder = 6
+  end
+  object ScrollBox1: TScrollBox
+    Left = 285
+    Top = 300
+    Width = 241
+    Height = 141
+    TabOrder = 7
+    object Image: TImage
+      Left = 2
+      Top = 0
+      Width = 199
+      Height = 106
+    end
   end
   object Timer1: TTimer
     Enabled = False
