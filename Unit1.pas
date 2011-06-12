@@ -9,30 +9,33 @@ uses
 const
   _CellWidth = 60;
   _CellHeight = 60;
-  BoardSize = 4;
+  BoardSize = 8;
 
 type
   TQueenAction = (GetBoard, CheckingIfSolution, FindPlaceToNewQueen);
 
   TForm1 = class(TForm)
     LogMemo: TMemo;
-    BoardGrid: TStringGrid;
     Button1: TButton;
     Timer1: TTimer;
     Button2: TButton;
     Button3: TButton;
     Label1: TLabel;
-    Label2: TLabel;
     BoardPanel: TPanel;
-    Button4: TButton;
     ScrollBox1: TScrollBox;
     Image: TImage;
+    StopCheckBox: TCheckBox;
+    SolutionsList: TListBox;
+    Button4: TButton;
+    Label2: TLabel;
     procedure Button1Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure StopCheckBoxClick(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
   private
     VisualBoard: array[1..BoardSize,1..BoardSize] of TImage;
     SolutionCounter: integer;             {счётчик количества решений}
@@ -43,10 +46,12 @@ type
     prevpos, prevqueen: integer; //позиция предыдущего ферзя на предыдущей линии (нужно для дерева)
     CurrAction: TQueenAction;   {действие, выполняемой в данный момент}
     FirstIteration: boolean;    {флаг, указывающий - будет ли следующая выполняемая итерация - первой во всём бектрекинге}
+    StopIfFoundSolution: boolean;
     function ClearBoard: TBoard;      {функция очищает доску}
     procedure SetQueenOnBoard(var a: TBoard; x,y: byte);        {процедура помещает ферзя на доску в коодинаты (x;y) и помечает клетки доски, находящиеся по ударом этого ферзя}
     procedure DrawBoard(board: TBoard);                         {вывести состояние доски в Grid}
     function IterateS: boolean;                                 {собственно сама ключевая процедура}
+    procedure WriteSolutionIntoList(board: TBoard);
   public
     { Public declarations }
   end;
@@ -67,21 +72,7 @@ var
   i,j: byte;
   BlackCell: byte;
   FileName: string;
-  c: char;
 begin
-  {output board into stringgrid}
-  for j:=1 to BoardSize do
-    for i:=1 to BoardSize do
-    begin
-      case board[j,i] of
-        cQueen: c:='Q';
-        cFree: c:='_';
-        cUnderAttack: c:='*';
-        else c:='O';
-      end;
-      BoardGrid.Cells[i-1, j-1]:=c;
-    end;
-
   {output board into BoardPanel}
   for i:=1 to BoardSize do
     for j:=1 to BoardSize do
@@ -158,6 +149,10 @@ end;
 
 procedure TForm1.Button1Click(Sender: TObject);
 begin
+  if timer1.Enabled then
+    button1.Caption:='запустить выполнение итераций  по таймеру'
+  else
+    button1.Caption:='остановить выполнение итераций  по таймеру';
   timer1.enabled:= not Timer1.Enabled;
 end;
 
@@ -176,6 +171,7 @@ var
   i,j: byte;
 begin
   FirstIteration:=True;
+  StopIfFoundSolution:= True;
   SolutionCounter:=0;
   BoardPanel.Width:= BoardSize * _CellWidth;
   BoardPanel.Height:= BoardSize * _CellHeight;
@@ -193,7 +189,7 @@ begin
           AutoSize:= True;
         end;
       end;
-   Tree.ImageInit;
+  Tree.ImageInit;
 end;
 
 procedure TForm1.Button2Click(Sender: TObject);
@@ -236,7 +232,7 @@ begin
     FirstIteration:= False;
     prevpos:= 1;
     prevqueen:= 1;
-    Draw (1, 1);
+ //   Draw (1, 1);
 	end;
 	
 	case CurrAction of
@@ -261,7 +257,9 @@ begin
 				if currQueen = BoardSize + 1 then	{we have a new solution, lets remind about it}
 				begin
 					LogMemo.Lines.Add ('we fucking have new solution');
-          timer1.Enabled:= False; //выключить таймер при нахождении решения
+          WriteSolutionIntoList(board);
+          if StopIfFoundSolution then
+            timer1.Enabled:= False; //выключить таймер при нахождении решения
           inc (SolutionCounter);
           currAction:= GetBoard;
 				end
@@ -279,11 +277,11 @@ begin
 					SetQueenOnBoard(copy, currQueen, itr);
           //{}DrawBoard(copy);
 					PushStack (Stack, CurrQueen + 1, copy);
-          if currQueen <= BoardSize then
-            Draw (currQueen, (prevpos - 1) * (BoardSize - currQueen + 1) + itr);
-          if prevqueen <> currQueen then
-            prevpos:= itr;
-          prevqueen:= currQueen;
+   //       if currQueen <= BoardSize then
+   //         Draw (currQueen, (prevpos - 1) * (BoardSize - currQueen + 1) + itr);
+   //       if prevqueen <> currQueen then
+   //         prevpos:= itr;
+   //       prevqueen:= currQueen;
 				end;
 				if itr = BoardSize then
 					CurrAction:= GetBoard
@@ -305,6 +303,33 @@ begin
   for i:=1 to BoardSize do
     for j:=1 to BoardSize do
       VisualBoard[i,j].Free;
+end;
+
+procedure TForm1.StopCheckBoxClick(Sender: TObject);
+begin
+  StopIfFoundSolution:=StopCheckBox.Checked;
+end;
+
+procedure TForm1.Button4Click(Sender: TObject);
+begin
+  FirstIteration:=True;
+  board:= ClearBoard;
+  DrawBoard(board);
+  SolutionsList.Clear;
+end;
+
+procedure TForm1.WriteSolutionIntoList(board: TBoard);
+const
+  chars: array[1..10] of char = ('a','b','c','d','e','f','g','h','j','k');
+var
+  i,j: byte;
+  Solution: string;
+begin
+  for j:=1 to BoardSize do
+    for i:=1 to BoardSize do
+      if board[i,j]=cQueen then
+        solution:=solution + chars[j] + inttostr(BoardSize - i + 1) + ' ';
+  SolutionsList.Items.Add(Solution);
 end;
 
 end.

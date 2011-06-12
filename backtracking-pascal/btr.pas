@@ -7,7 +7,7 @@
 }
  
 uses
-	Crt, Queues{, Stacks};
+	Crt, {Queues,} Stacks;
 	  
 VAR
 	board: TBoard;   	
@@ -83,13 +83,10 @@ var
 	i:integer;
 	b:TBoard;
 begin
-	write_board(a);
 	if x=BoardSize+1 then     {если все ферзи расставлены}
     begin
-		//writeln(k+1,').');
-		//write_board(a);
-		//readln;
-		writeln('it was a solution');
+		write_board(a);
+		writeln('it was a solution ',k+1);
 		readln;
 		inc(k)      {наращиваем счетчик вариантов расстановки}
 	end
@@ -104,7 +101,7 @@ begin
 end;
 
 
-{procedure SET_F_iter_stack(startBoard:TBoard);
+procedure SET_F_iter_stack(startBoard:TBoard);
 var
 	Stack: pStack;
 	x: byte;			
@@ -115,10 +112,8 @@ begin
 	PushStack(Stack, 1,startBoard);
 	while Stack<>nil do
 	begin
-		//writeln('stackiteration');
 		PopStack(Stack, x, b);
-	//	write_board(b);
-		if x=N+1 then     
+		if x=BoardSize+1 then     
 		begin
 			writeln(k+1,'.');
 			write_board(b);
@@ -126,7 +121,7 @@ begin
 			inc(k)      
 		end
 		else       
-			for i:=1 to N do       
+			for i:=1 to BoardSize do       
 				if b[x,i]=cFree then     
 				begin
 					copy:=b;
@@ -134,12 +129,12 @@ begin
 					PushStack(Stack, x+1, copy);
 				end;	
 	end;
-end;}
+end;
 
-procedure SET_F_iter_queue(startBoard:TBoard);
+{procedure SET_F_iter_queue(startBoard:TBoard);
 var
 	Queue: pQueue;	
-	x: byte;			{x*— строка, куда добавляем ферзя}
+	x: byte;			
 	i: byte;
 	b,c: TBoard;
 begin
@@ -148,23 +143,23 @@ begin
 	while Queue<>nil do
 	begin
 		PopQueue(Queue, x, b);
-		if x=BoardSize+1 then     {если все ферзи расставлены}
+		if x=BoardSize+1 then     
 		begin
 			writeln(k+1,'.');
 			write_board(b);
 			readln;
-			inc(k)      {наращиваем счетчик вариантов расстановки}
+			inc(k)     
 		end
-		else        {в противном случае}
-			for i:=1 to BoardSize do       {ищем в строке}
-				if b[x,i]=cFree then      {первую свободную клетку}
+		else        
+			for i:=1 to BoardSize do     
+				if b[x,i]=cFree then     
 				begin
 					c:=b;
-					Fill_F(x,i,c);  {устанавливаем ферзя в i-й столбец строки x}
+					Fill_F(x,i,c);  
 					PushQueue(Queue, x+1, c);
 				end;	
 	end;
-end;
+end;}
 
 
 
@@ -174,9 +169,10 @@ BEGIN
 	for i:= 1 to BoardSize do
 		for J:= 1 to BoardSize do
 			board[i,j]:=cFree;       {все клетки матрицы свободны}
-	//Set_F(1,board);        {вызываем рекурсивную процедуру установки ферзя (сначала устанавливаем первого ферзя на свободную доску)}
+	
+	Set_F(1,board);        {вызываем рекурсивную процедуру установки ферзя (сначала устанавливаем первого ферзя на свободную доску)}
 	//Set_F_iter_stack(board);		{итерационный бектрекинг(со стеком)}
-	Set_F_iter_queue(board);		{итерационный бектрекинг, но с очередью}
+	//Set_F_iter_queue(board);		{итерационный бектрекинг, но с очередью}
 	writeln(k);    {выводим ответ*— число вариантов расстановки}
 	readln;
 END.
