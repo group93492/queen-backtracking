@@ -3,24 +3,34 @@ unit Tree;
 interface
 
 uses
-  Types, SysUtils, Stacks;
-
-const
-
-  Start: TPoint = (x: 300; y: 20);
-  LineWidth = 35;
-  LineHeight = 50;
-  UnitRadius = 3;
-  TextDistance = 3;
-
-procedure DrawUnit (CurrLevel, CurrBoardCount, PrevAbsBoardPos, CurrBoardPos: integer);
+  SysUtils, Stacks;
+  
 function CurrAbsBoardPos (CurrLevel, CurrBoardPos, PrevAbsBoardPos: integer): integer;
+procedure DrawUnit (CurrLevel, CurrBoardCount, PrevAbsBoardPos, CurrBoardPos: integer);
 procedure ImageInit;
+procedure MarkBadThread (Level, AbsBoardPos: integer);
+procedure MarkGoodThread (Level, AbsBoardPos: integer);
   
 implementation
 
 uses
-  Main, Graphics;
+  Main, Graphics, Types;
+
+const
+  MarkColor = clGreen;
+  NormalColor = clBlack;
+  NormalWidth = 1;
+  NormalBrushColor = clWhite;
+  BadLineColor = clRed;
+  BadLineLength = 10;
+  BadLineWidth = 3;
+  GoodCircleColor = clGreen;
+  GoodCircleRadius = 7;
+  LineWidth = 35;
+  LineHeight = 50;
+  UnitRadius = 3;
+  TextDistance = 3;
+  Start: TPoint = (x: 300; y: 20);
 
 {вычисление максимального количества вариантов, которые могут быть на определённой строке}
 function MaxVariants (value: byte): cardinal;
@@ -77,6 +87,58 @@ begin
     Ellipse (CurrCoord.X - UnitRadius, CurrCoord.Y - UnitRadius, CurrCoord.X + UnitRadius, CurrCoord.Y + UnitRadius);
     TextOut (CurrCoord.X + TextDistance, CurrCoord.Y, '(' + IntToStr (CurrLevel + 1) + ', ' + IntToStr (CurrBoardPos) + ')');
   end;
+  
 end;
+
+procedure MarkBadThread (Level, AbsBoardPos: integer);
+var
+  X, Y: integer;
+begin
+  X:= Main.QueenForm.Image.Width div MaxVariants (Level) * (AbsBoardPos - 1) +
+      Main.QueenForm.Image.Width div MaxVariants (Level) div 2;
+  Y:= Start.Y + Level * LineHeight;
+  with Main.QueenForm.Image.Canvas do
+  begin
+    Pen.Color:= BadLineColor;
+    Pen.Width:= BadLineWidth;
+    MoveTo (X - BadLineLength div 2, Y - BadLineLength div 2);
+    LineTo (X + BadLineLength div 2, Y + BadLineLength div 2);
+    MoveTo (X + BadLineLength div 2, Y - BadLineLength div 2);
+    LineTo (X - BadLineLength div 2, Y + BadLineLength div 2); 
+    Pen.Color:= NormalColor;
+    Pen.Width:= NormalWidth;  
+  end;
+end;
+
+procedure MarkGoodThread (Level, AbsBoardPos: integer);
+var
+  X, Y: integer;
+begin
+  X:= Main.QueenForm.Image.Width div MaxVariants (Level) * (AbsBoardPos - 1) + 
+                Main.QueenForm.Image.Width div MaxVariants (Level) div 2;
+  Y:= Start.Y + Level * LineHeight;
+  with Main.QueenForm.Image.Canvas do
+  begin
+    Pen.Color:= GoodCircleColor;
+    Brush.Color:= GoodCircleColor;
+    Ellipse (X - GoodCircleRadius, Y - GoodCircleRadius, X + GoodCircleRadius, Y + GoodCircleRadius); 
+    Brush.Color:= NormalBrushColor;
+    Pen.Color:= NormalColor;
+  end;
+end;
+
+{procedure MarkTrueThread (Board: Stacks.TBoard; Color: TColor);
+var
+  itrCol, itrRow: smallint;
+begin
+  Main.QueenForm.Image.Canvas.Pen.Color:= MarkColor;
+  for itrCol:= 1 to BoardSize do
+    for itrRow:= 1 to BoardSize do 
+      if Board[itrCol][itrRow] = cQueen then
+      begin
+        DrawUnit (itrCol,     
+      end;
+  Main.QueenForm.Image.Canvas.Pen.Color:= NormalColor;
+end;}
 
 end.

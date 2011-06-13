@@ -7,13 +7,13 @@ interface
 
  type
 	TCell = (cQueen, cUnderAttack, cFree);
-	TBoard = array[1..BoardSize,1..BoardSize] of TCell;
-	pStack=^TStack;	
+	TBoard = array[1..BoardSize, 1..BoardSize] of TCell;
+	PStack= ^TStack;	
 	TStack = record
        x: byte;
        CurrAbsBoardPos: integer; //текущее положение ферз€ в строке применительно к отрисовке
        board: TBoard;
-       next:pStack;
+       next: PStack;
 	end;
 	
 	procedure CreateStack (var top:pStack);
@@ -24,7 +24,7 @@ interface
 
 implementation
 	
-	procedure CreateStack(var top: pStack);
+	procedure CreateStack (var top: pStack);
 	{создание пустого стека}
 	begin
     if top <> nil then
@@ -33,7 +33,7 @@ implementation
   		top:= nil;
 	end;
 	
-	procedure PushStack(var top: pStack; x: byte; board: TBoard; CurrAbsBoardPos: integer);
+	procedure PushStack (var top: pStack; x: byte; board: TBoard; CurrAbsBoardPos: integer);
 	{добавление элемента в верх стека}
 	var
 		temp: pStack;
@@ -46,7 +46,7 @@ implementation
 		top:= temp;					{сохран€ем стек с новым элементом}
 	end;
 		
-	procedure PopStack(var top: pStack; var x: byte; var board: TBoard; var CurrAbsBoardPos: integer);
+	procedure PopStack (var top: pStack; var x: byte; var board: TBoard; var CurrAbsBoardPos: integer);
 	{изъ€тие элемента из вершины стека}
 	var
 		temp: pStack;

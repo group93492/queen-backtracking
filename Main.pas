@@ -22,11 +22,11 @@ type
     Button3: TButton;
     Label1: TLabel;
     BoardPanel: TPanel;
-    ScrollBox1: TScrollBox;
+    ScrollBox: TScrollBox;
     Image: TImage;
     StopCheckBox: TCheckBox;
     SolutionsList: TListBox;
-    Button4: TButton;
+    ResetButton: TButton;
     Label2: TLabel;
     procedure Button1Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
@@ -35,7 +35,7 @@ type
     procedure Button3Click(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure StopCheckBoxClick(Sender: TObject);
-    procedure Button4Click(Sender: TObject);
+    procedure ResetButtonClick(Sender: TObject);
   private
     VisualBoard: array[1..BoardSize,1..BoardSize] of TImage;
     SolutionCounter: integer;             {счётчик количества решений}
@@ -254,12 +254,13 @@ begin
 		CheckingIfSolution:
 			begin
         LogMemo.Lines.Add ('checking if a new solution');
-				if currQueen = BoardSize + 1 then	{we got a new solution, lets remind about it}
+				if CurrQueen = BoardSize + 1 then	{we got a new solution, lets remind about it}
 				begin
 					LogMemo.Lines.Add ('we fucking got a new solution');
           WriteSolutionIntoList (board);
+          MarkGoodThread (CurrQueen - 1, PrevAbsBoardPos);
           if StopIfFoundSolution then
-            timer1.Enabled:= False; //выключить таймер при нахождении решения
+            Timer1.Enabled:= False; //выключить таймер при нахождении решения
           Inc (SolutionCounter);
           CurrAction:= GetBoard;
 				end
@@ -283,6 +284,8 @@ begin
 				if itr = BoardSize then
         begin
 					CurrAction:= GetBoard;
+          if QueenHereCounter = 0 then
+            MarkBadThread (CurrQueen - 1, PrevAbsBoardPos);
           QueenHereCounter:= 0;
         end
 				else
@@ -310,7 +313,7 @@ begin
   StopIfFoundSolution:=StopCheckBox.Checked;
 end;
 
-procedure TQueenForm.Button4Click(Sender: TObject);
+procedure TQueenForm.ResetButtonClick (Sender: TObject);
 begin
   FirstIteration:= True;
   board:= ClearBoard;
@@ -331,7 +334,7 @@ begin
   for j:=1 to BoardSize do
     for i:=1 to BoardSize do
       if board[i,j]= cQueen then
-        solution:= solution + chars[j] + IntToStr (BoardSize - i + 1) + ' ';
+        Solution:= Solution + chars[j] + IntToStr (BoardSize - i + 1) + ' ';
   SolutionsList.Items.Add (Solution);
 end;
 

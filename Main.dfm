@@ -1,6 +1,6 @@
 object QueenForm: TQueenForm
-  Left = 155
-  Top = 97
+  Left = 192
+  Top = 225
   Width = 1181
   Height = 722
   Caption = 'QueenForm'
@@ -77,7 +77,7 @@ object QueenForm: TQueenForm
     Height = 465
     TabOrder = 4
   end
-  object ScrollBox1: TScrollBox
+  object ScrollBox: TScrollBox
     Left = 496
     Top = 264
     Width = 286
@@ -116,14 +116,14 @@ object QueenForm: TQueenForm
     ParentFont = False
     TabOrder = 7
   end
-  object Button4: TButton
+  object ResetButton: TButton
     Left = 544
     Top = 8
     Width = 145
     Height = 41
     Caption = #1089#1073#1088#1086#1089#1080#1090#1100' '#1094#1080#1082#1083
     TabOrder = 8
-    OnClick = Button4Click
+    OnClick = ResetButtonClick
   end
   object Timer1: TTimer
     Enabled = False
