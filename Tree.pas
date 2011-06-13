@@ -16,7 +16,6 @@ const
 procedure DrawUnit (CurrLevel, CurrBoardCount, PrevAbsBoardPos, CurrBoardPos: integer);
 function CurrAbsBoardPos (CurrLevel, CurrBoardPos, PrevAbsBoardPos: integer): integer;
 procedure ImageInit;
-function FindQueen (board: Stacks.TBoard; CurrQueen: shortint): shortint;
   
 implementation
 
@@ -54,13 +53,6 @@ begin
     Width:= maxvariants (BoardSize) * LineWidth + Start.X;
     Canvas.Font.Color:= clBlue;
   end;
-end;
-
-function FindQueen (board: Stacks.TBoard; CurrQueen: shortint): shortint;
-begin
-  Result:= 1;
-  while board[CurrQueen][Result] <> cQueen do
-    Inc (Result);
 end;
 
 function CurrAbsBoardPos (CurrLevel, CurrBoardPos, PrevAbsBoardPos: integer): integer;
