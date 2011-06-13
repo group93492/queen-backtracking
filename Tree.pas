@@ -87,7 +87,11 @@ begin
     Ellipse (CurrCoord.X - UnitRadius, CurrCoord.Y - UnitRadius, CurrCoord.X + UnitRadius, CurrCoord.Y + UnitRadius);
     TextOut (CurrCoord.X + TextDistance, CurrCoord.Y, '(' + IntToStr (CurrLevel + 1) + ', ' + IntToStr (CurrBoardPos) + ')');
   end;
-  
+  with Main.QueenForm.ScrollBox do //показываем изменения в дереве
+  begin
+    HorzScrollBar.Position:= PrevCoord.X - Width div 2;
+    VertScrollBar.Position:= PrevCoord.Y - Height div 2;
+  end;
 end;
 
 procedure MarkBadThread (Level, AbsBoardPos: integer);
