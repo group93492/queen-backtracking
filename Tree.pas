@@ -25,23 +25,22 @@ uses
 {вычисление максимального количества вариантов, которые могут быть на определённой строке}
 function MaxVariants (value: byte): cardinal;
 var
-  itr, max: shortint;
+  itr, Max: shortint;
 begin
   if value = 0 then
   begin
-    //Result:= 0;
-    Result:= 1;  //new
+    Result:= 1;
     Exit;
   end;
-  Result:= boardsize;
+  Result:= BoardSize;
   if value = 1 then
     Exit;
-  max:= boardsize - 2;
+  Max:= BoardSize - 2;
   for itr:= 2 to value do
   begin
-    Result:= Result * max;
-    if max > 1 then
-      dec (max);
+    Result:= Result * Max;
+    if Max > 1 then
+      Dec (Max);
   end;
 end;
 
@@ -50,7 +49,7 @@ begin
   with Main.QueenForm.Image do
   begin
     Height:= (BoardSize + 1) * LineHeight + Start.Y;
-    Width:= maxvariants (BoardSize) * LineWidth + Start.X;
+    Width:= MaxVariants (BoardSize) * LineWidth + Start.X;
     Canvas.Font.Color:= clBlue;
   end;
 end;

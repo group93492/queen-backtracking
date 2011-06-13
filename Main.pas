@@ -153,7 +153,7 @@ begin
     button1.Caption:='запустить выполнение итераций  по таймеру'
   else
     button1.Caption:='остановить выполнение итераций  по таймеру';
-  timer1.enabled:= not Timer1.Enabled;
+  Timer1.enabled:= not Timer1.Enabled;
 end;
 
 procedure TQueenForm.Timer1Timer(Sender: TObject);
@@ -269,7 +269,7 @@ begin
 
 		FindPlaceToNewQueen:
 			begin {what about skiping this part in timer and just show a free place to set?}
-        LogMemo.Lines.Add('Finding new place for the ' + inttostr (CurrQueen) + 'th queen');
+        LogMemo.Lines.Add ('Finding new place for the ' + inttostr (CurrQueen) + 'th queen');
 				if board[currQueen, itr] = cFree then
 				begin
           LogMemo.Lines.Add ('Found place. Adding it to the Queue');
@@ -286,14 +286,14 @@ begin
           QueenHereCounter:= 0;
         end
 				else
-					inc(itr);
+					Inc (itr);
 			end;
 	end;
 
 	//write_board;
   //DrawBoard(board);
-  LogMemo.Lines.Add('</Iteration>');
-  result:=False;
+  LogMemo.Lines.Add ('</Iteration>');
+  result:= False;
 end;
 
 procedure TQueenForm.FormDestroy(Sender: TObject);
@@ -312,10 +312,13 @@ end;
 
 procedure TQueenForm.Button4Click(Sender: TObject);
 begin
-  FirstIteration:=True;
+  FirstIteration:= True;
   board:= ClearBoard;
-  DrawBoard(board);
+  DrawBoard (board);
   SolutionsList.Clear;
+  ClearStack (Stack);
+  Image.Canvas.Brush.Color := clWhite;
+  Image.Canvas.FillRect (Image.Canvas.ClipRect);
 end;
 
 procedure TQueenForm.WriteSolutionIntoList(board: TBoard);
@@ -327,9 +330,9 @@ var
 begin
   for j:=1 to BoardSize do
     for i:=1 to BoardSize do
-      if board[i,j]=cQueen then
-        solution:=solution + chars[j] + inttostr(BoardSize - i + 1) + ' ';
-  SolutionsList.Items.Add(Solution);
+      if board[i,j]= cQueen then
+        solution:= solution + chars[j] + IntToStr (BoardSize - i + 1) + ' ';
+  SolutionsList.Items.Add (Solution);
 end;
 
 end.
