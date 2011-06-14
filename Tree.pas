@@ -10,6 +10,7 @@ procedure DrawUnit (CurrLevel, CurrBoardCount, PrevAbsBoardPos, CurrBoardPos: in
 procedure ImageInit;
 procedure MarkBadThread (Level, AbsBoardPos: integer);
 procedure MarkGoodThread (Level, AbsBoardPos: integer);
+procedure ClearTree;
   
 implementation
 
@@ -17,6 +18,7 @@ uses
   Main, Graphics, Types;
 
 const
+  MaxBoardSizeForTree = 6;
   MarkColor = clGreen;
   NormalColor = clBlack;
   NormalWidth = 1;
@@ -46,22 +48,55 @@ begin
   if value = 1 then
     Exit;
   Max:= BoardSize - 2;
-  for itr:= 2 to value do
+  if BoardSize < 6 then
   begin
-    Result:= Result * Max;
-    if Max > 1 then
-      Dec (Max);
+    for itr:= 2 to value do
+    begin
+      Result:= Result * Max;
+      if Max > 1 then
+        Dec (Max);
+    end;
+  end
+  else
+    for itr:= 2 to value do
+      begin
+        Result:= Result * Max;
+        if Max > 2 then
+          Dec (Max);
+      end;
+end;
+
+function CanDrawTree (BoardSize: shortint): boolean;
+begin
+  if BoardSize > MaxBoardSizeForTree then
+  begin
+    Main.QueenForm.Image.Visible:= false;
+    Result:= false;
+  end
+  else
+  begin
+    Main.QueenForm.Image.Visible:= true;
+    Result:= true;
   end;
 end;
 
+procedure ClearTree;
+begin
+  if CanDrawTree (BoardSize) then
+    Main.QueenForm.Image.Canvas.FillRect (Main.QueenForm.Image.Canvas.ClipRect);
+end; 
+
 procedure ImageInit;
 begin
-  with Main.QueenForm.Image do
-  begin
-    Height:= (BoardSize + 1) * LineHeight + Start.Y;
-    Width:= MaxVariants (BoardSize) * LineWidth + Start.X;
-    Canvas.Font.Color:= clBlue;
-  end;
+  if CanDrawTree (BoardSize) then
+    with Main.QueenForm.Image do
+    begin
+      Canvas.Brush.Color := clWhite;
+      Picture:= nil;
+      Height:= (BoardSize + 1) * LineHeight + Start.Y;
+      Width:= MaxVariants (BoardSize) * LineWidth + Start.X;
+      Canvas.Font.Color:= clBlue;
+    end;
 end;
 
 function CurrAbsBoardPos (CurrLevel, CurrBoardPos, PrevAbsBoardPos: integer): integer;
@@ -75,25 +110,28 @@ const
 var
   PrevCoord, CurrCoord: TPoint;
 begin
-  CurrCoord.X:= Main.QueenForm.Image.Width div MaxVariants (CurrLevel) * CurrAbsBoardPos (CurrLevel, CurrBoardCount - 1, PrevAbsBoardPos) + 
-                Main.QueenForm.Image.Width div MaxVariants (CurrLevel) div 2;
-  CurrCoord.Y:= Start.Y + CurrLevel * LineHeight;
-  Dec (CurrLevel); //для вычисления предыдущей координаты
-  PrevCoord.X:= Main.QueenForm.Image.Width div MaxVariants (CurrLevel) * (PrevAbsBoardPos - 1) +
-  Main.QueenForm.Image.Width div MaxVariants (CurrLevel) div 2;
-  PrevCoord.Y:= Start.Y + CurrLevel * LineHeight; 
-  with Main.QueenForm.Image.Canvas do
-  begin
-    MoveTo (PrevCoord.X, PrevCoord.Y);
-    LineTo (CurrCoord.X, CurrCoord.Y);
-    Ellipse (CurrCoord.X - UnitRadius, CurrCoord.Y - UnitRadius, CurrCoord.X + UnitRadius, CurrCoord.Y + UnitRadius);
-    //TextOut (CurrCoord.X + TextDistance, CurrCoord.Y, '(' + IntToStr (CurrLevel + 1) + ', ' + IntToStr (CurrBoardPos) + ')');     //первоначальное именование узлов дерава
-    TextOut (CurrCoord.X + TextDistance, CurrCoord.Y, Format('(%s%d)',[chars[CurrBoardPos],BoardSize - CurrLevel]));               //изменено: узел дерева теперь подписан соответствующей постановкой ферзя (B4, A3 etc)
-  end;
-  with Main.QueenForm.ScrollBox do //показываем изменения в дереве
-  begin
-    HorzScrollBar.Position:= PrevCoord.X - Width div 2;
-    VertScrollBar.Position:= PrevCoord.Y - Height div 2;
+  if CanDrawTree (BoardSize) then
+    begin
+    CurrCoord.X:= Main.QueenForm.Image.Width div MaxVariants (CurrLevel) * CurrAbsBoardPos (CurrLevel, CurrBoardCount - 1, PrevAbsBoardPos) + 
+                  Main.QueenForm.Image.Width div MaxVariants (CurrLevel) div 2;
+    CurrCoord.Y:= Start.Y + CurrLevel * LineHeight;
+    Dec (CurrLevel); //для вычисления предыдущей координаты
+    PrevCoord.X:= Main.QueenForm.Image.Width div MaxVariants (CurrLevel) * (PrevAbsBoardPos - 1) +
+    Main.QueenForm.Image.Width div MaxVariants (CurrLevel) div 2;
+    PrevCoord.Y:= Start.Y + CurrLevel * LineHeight; 
+    with Main.QueenForm.Image.Canvas do
+    begin
+      MoveTo (PrevCoord.X, PrevCoord.Y);
+      LineTo (CurrCoord.X, CurrCoord.Y);
+      Ellipse (CurrCoord.X - UnitRadius, CurrCoord.Y - UnitRadius, CurrCoord.X + UnitRadius, CurrCoord.Y + UnitRadius);
+      //TextOut (CurrCoord.X + TextDistance, CurrCoord.Y, '(' + IntToStr (CurrLevel + 1) + ', ' + IntToStr (CurrBoardPos) + ')');     //первоначальное именование узлов дерава
+      TextOut (CurrCoord.X + TextDistance, CurrCoord.Y, Format('(%s%d)',[chars[CurrBoardPos],BoardSize - CurrLevel]));               //изменено: узел дерева теперь подписан соответствующей постановкой ферзя (B4, A3 etc)
+    end;
+    with Main.QueenForm.ScrollBox do //показываем изменения в дереве
+    begin
+      HorzScrollBar.Position:= PrevCoord.X - Width div 2;
+      VertScrollBar.Position:= PrevCoord.Y - Height div 2;
+    end;
   end;
 end;
 
@@ -101,19 +139,22 @@ procedure MarkBadThread (Level, AbsBoardPos: integer);
 var
   X, Y: integer;
 begin
-  X:= Main.QueenForm.Image.Width div MaxVariants (Level) * (AbsBoardPos - 1) +
-      Main.QueenForm.Image.Width div MaxVariants (Level) div 2;
-  Y:= Start.Y + Level * LineHeight;
-  with Main.QueenForm.Image.Canvas do
+  if CanDrawTree (BoardSize) then
   begin
-    Pen.Color:= BadLineColor;
-    Pen.Width:= BadLineWidth;
-    MoveTo (X - BadLineLength div 2, Y - BadLineLength div 2);
-    LineTo (X + BadLineLength div 2, Y + BadLineLength div 2);
-    MoveTo (X + BadLineLength div 2, Y - BadLineLength div 2);
-    LineTo (X - BadLineLength div 2, Y + BadLineLength div 2); 
-    Pen.Color:= NormalColor;
-    Pen.Width:= NormalWidth;  
+    X:= Main.QueenForm.Image.Width div MaxVariants (Level) * (AbsBoardPos - 1) +
+        Main.QueenForm.Image.Width div MaxVariants (Level) div 2;
+    Y:= Start.Y + Level * LineHeight;
+    with Main.QueenForm.Image.Canvas do
+    begin
+      Pen.Color:= BadLineColor;
+      Pen.Width:= BadLineWidth;
+      MoveTo (X - BadLineLength div 2, Y - BadLineLength div 2);
+      LineTo (X + BadLineLength div 2, Y + BadLineLength div 2);
+      MoveTo (X + BadLineLength div 2, Y - BadLineLength div 2);
+      LineTo (X - BadLineLength div 2, Y + BadLineLength div 2); 
+      Pen.Color:= NormalColor;
+      Pen.Width:= NormalWidth;  
+    end;
   end;
 end;
 
@@ -121,16 +162,19 @@ procedure MarkGoodThread (Level, AbsBoardPos: integer);
 var
   X, Y: integer;
 begin
-  X:= Main.QueenForm.Image.Width div MaxVariants (Level) * (AbsBoardPos - 1) + 
-                Main.QueenForm.Image.Width div MaxVariants (Level) div 2;
-  Y:= Start.Y + Level * LineHeight;
-  with Main.QueenForm.Image.Canvas do
+  if CanDrawTree (BoardSize) then
   begin
-    Pen.Color:= GoodCircleColor;
-    Brush.Color:= GoodCircleColor;
-    Ellipse (X - GoodCircleRadius, Y - GoodCircleRadius, X + GoodCircleRadius, Y + GoodCircleRadius); 
-    Brush.Color:= NormalBrushColor;
-    Pen.Color:= NormalColor;
+    X:= Main.QueenForm.Image.Width div MaxVariants (Level) * (AbsBoardPos - 1) + 
+                  Main.QueenForm.Image.Width div MaxVariants (Level) div 2;
+    Y:= Start.Y + Level * LineHeight;
+    with Main.QueenForm.Image.Canvas do
+    begin
+      Pen.Color:= GoodCircleColor;
+      Brush.Color:= GoodCircleColor;
+      Ellipse (X - GoodCircleRadius, Y - GoodCircleRadius, X + GoodCircleRadius, Y + GoodCircleRadius); 
+      Brush.Color:= NormalBrushColor;
+      Pen.Color:= NormalColor;
+    end;
   end;
 end;
 
