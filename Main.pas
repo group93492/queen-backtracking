@@ -11,7 +11,7 @@ const
   _CellHeight = 60;
   _IndentLeft  = 15;
   _IndentTop  = 15;
-  defBoardSize = 5;
+  defBoardSize = 4;
 
 type
   TQueenAction = (GetBoard, CheckingIfSolution, FindPlaceToNewQueen);
@@ -82,7 +82,6 @@ begin
   Canvas.Rectangle(Canvas.ClipRect);
   Canvas.Pen.Color:=o_pen;
   Canvas.Brush.Color:=o_brush;
-
 end;
 
 
@@ -100,10 +99,10 @@ var
 begin
   {output board into VisualBoard - TImage}
   TempBMP:=TBitmap.Create;
+  VisualBoard.Picture:= nil;
   VisualBoard.Width:= BoardSize * _CellWidth + _IndentLeft;
   VisualBoard.Height:= BoardSize  * _CellHeight + _IndentTop;
-  VisualBoard.Picture:= nil;
-  ClearCanvas(VisualBoard.Canvas);
+ // ClearCanvas(VisualBoard.Canvas);
   BlackCell:=False;
   //draw cells of board
   for i:=1 to BoardSize do
@@ -158,8 +157,8 @@ var
 begin
   for i:= 1 to BoardSize do
     for J:= 1 to BoardSize do
-      board[i,j]:=cFree;
-  result:=board;
+      board[i,j]:= cFree;
+  Result:= board;
 end;
 
 
@@ -201,11 +200,11 @@ begin
 	j:=y-1;
 	while (i<>BoardSize+1) and (j<>0) do
   begin
-		a[i,j]:=cUnderAttack;    {почемаем диагональ слева вниз от (x,y)}
+		a[i,j]:=cUnderAttack;    {помечаем диагональ слева вниз от (x,y)}
 		inc(i);
 		dec(j);
   end;
-	a[x,y]:=cQueen;    {помечаем "Ферзём" клетку (x,y)}
+	a[x,y]:=cQueen;    {помечаем "ферзём" клетку (x,y)}
 end;
 
 
@@ -224,8 +223,8 @@ begin
   if IterateS then
   begin
     StopTimer;
-    LogMemo.Lines.Add('EndCycle');
-    LogMemo.Lines.Add(Format('%d solutions',[SolutionCounter]));
+    LogMemo.Lines.Add ('EndCycle');
+    LogMemo.Lines.Add(Format ('%d solutions',[SolutionCounter]));
   end;
 end;
 
@@ -236,11 +235,10 @@ begin
   SolutionCounter:=0;
   BoardSizeEdit.MaxValue:= Stacks.maxBoardSize;
   BoardSizeEdit.Value:= defBoardSize;
-  //SetBoardSize()
-  {BoardSize:= defBoardSize;
-  board:=ClearBoard;
-  DrawBoard(board);
-  Tree.ImageInit;  }
+  BoardSize:= defBoardSize;
+  board:= ClearBoard;
+  DrawBoard (board);
+  Tree.ImageInit;
 end;
 
 procedure TQueenForm.Button2Click(Sender: TObject);
@@ -262,6 +260,17 @@ begin
       c:=IterateS;
       application.ProcessMessages;
     end;
+end;
+
+procedure TQueenForm.SetBoardSize (Value: byte);
+begin
+  Main.BoardSize:= Value;
+  Tree.ImageInit;
+  QueenForm.ResetButtonClick (Self);
+  if not FirstIteration then
+    FirstIteration:= True;
+  board:= ClearBoard;
+  DrawBoard (board);
 end;
 
 function TQueenForm.IterateS: boolean;
@@ -289,15 +298,15 @@ begin
 	case CurrAction of
 		GetBoard:
 			begin
-        LogMemo.Lines.Add('Getting board from Stack');
+        LogMemo.Lines.Add ('Getting board from Stack');
 				if Stack = nil then
 				begin
-          LogMemo.Lines.Add('quiting from cycle');
-					result:=True;
-					exit;
+          LogMemo.Lines.Add ('quiting from cycle');
+					Result:= True;
+					Exit;
 				end;
 				PopStack (Stack, currQueen, board, PrevAbsBoardPos);
-        DrawBoard(board);            //необязательная строка кажись
+        DrawBoard (board);            //необязательная строка кажись
 				CurrAction:= CheckingIfSolution;
 				itr:= BoardSize;
 			end;
@@ -364,8 +373,7 @@ begin
   DrawBoard (board);
   SolutionsList.Clear;
   ClearStack (Stack);
-  Image.Canvas.Brush.Color := clWhite;
-  Image.Canvas.FillRect (Image.Canvas.ClipRect);
+  Tree.ClearTree;
 end;
 
 procedure TQueenForm.WriteSolutionIntoList(board: TBoard);
@@ -394,28 +402,9 @@ begin
   Timer1.enabled:= False;
 end;
 
-procedure TQueenForm.SetBoardSize(Value: byte);
-begin
-  BoardSize:= Value;
-  if not FirstIteration then
-  begin
-    StopTimer;
-    FirstIteration:= True;
-    SolutionCounter:=0;
-    SolutionsList.Clear;
-    ClearStack (Stack);
-    Image.Canvas.Brush.Color := clWhite;
-    Image.Canvas.FillRect (Image.Canvas.ClipRect);
-  end;
-  board:= ClearBoard;
-  DrawBoard (board);
-  Tree.ImageInit;
-end;
-
 procedure TQueenForm.BoardSizeEditChange(Sender: TObject);
 begin
-//  showmessage('change');
-  SetBoardSize(BoardSizeEdit.Value);
+  SetBoardSize (BoardSizeEdit.Value);
 end;
 
 end.
