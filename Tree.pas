@@ -70,7 +70,9 @@ begin
 end;
 
 procedure DrawUnit (CurrLevel, CurrBoardCount, PrevAbsBoardPos, CurrBoardPos: integer);
-var                                        
+const
+  chars = 'ABCDEFGHIJ';
+var
   PrevCoord, CurrCoord: TPoint;
 begin
   CurrCoord.X:= Main.QueenForm.Image.Width div MaxVariants (CurrLevel) * CurrAbsBoardPos (CurrLevel, CurrBoardCount - 1, PrevAbsBoardPos) + 
@@ -85,7 +87,8 @@ begin
     MoveTo (PrevCoord.X, PrevCoord.Y);
     LineTo (CurrCoord.X, CurrCoord.Y);
     Ellipse (CurrCoord.X - UnitRadius, CurrCoord.Y - UnitRadius, CurrCoord.X + UnitRadius, CurrCoord.Y + UnitRadius);
-    TextOut (CurrCoord.X + TextDistance, CurrCoord.Y, '(' + IntToStr (CurrLevel + 1) + ', ' + IntToStr (CurrBoardPos) + ')');
+    //TextOut (CurrCoord.X + TextDistance, CurrCoord.Y, '(' + IntToStr (CurrLevel + 1) + ', ' + IntToStr (CurrBoardPos) + ')');     //первоначальное именование узлов дерава
+    TextOut (CurrCoord.X + TextDistance, CurrCoord.Y, Format('(%s%d)',[chars[CurrBoardPos],BoardSize - CurrLevel]));               //изменено: узел дерева теперь подписан соответствующей постановкой ферзя (B4, A3 etc)
   end;
   with Main.QueenForm.ScrollBox do //показываем изменения в дереве
   begin
