@@ -82,6 +82,7 @@ begin
   Canvas.Rectangle(Canvas.ClipRect);
   Canvas.Pen.Color:=o_pen;
   Canvas.Brush.Color:=o_brush;
+
 end;
 
 
@@ -90,7 +91,7 @@ procedure TQueenForm.DrawBoard(board: TBoard);
 //но мне нравится :3
 const
   GlyphDir = 'glyph\';
-  chars = 'abcdefghij';
+  chars = 'ABCDEFGHIJ';
 var
   i,j: byte;
   BlackCell: boolean;
@@ -101,7 +102,8 @@ begin
   TempBMP:=TBitmap.Create;
   VisualBoard.Width:= BoardSize * _CellWidth + _IndentLeft;
   VisualBoard.Height:= BoardSize  * _CellHeight + _IndentTop;
- // ClearCanvas(VisualBoard.Canvas);
+  VisualBoard.Picture:= nil;
+  ClearCanvas(VisualBoard.Canvas);
   BlackCell:=False;
   //draw cells of board
   for i:=1 to BoardSize do
@@ -234,10 +236,11 @@ begin
   SolutionCounter:=0;
   BoardSizeEdit.MaxValue:= Stacks.maxBoardSize;
   BoardSizeEdit.Value:= defBoardSize;
-  BoardSize:= defBoardSize;
+  //SetBoardSize()
+  {BoardSize:= defBoardSize;
   board:=ClearBoard;
   DrawBoard(board);
-  Tree.ImageInit;
+  Tree.ImageInit;  }
 end;
 
 procedure TQueenForm.Button2Click(Sender: TObject);
@@ -329,7 +332,7 @@ begin
 					PushStack (Stack, CurrQueen + 1, copy, CurrAbsBoardPos (CurrQueen, QueenHereCounter, PrevAbsBoardPos));
           DrawUnit (CurrQueen, QueenHereCounter, PrevAbsBoardPos, itr); 
 				end;
-				if itr = 0 then
+				if itr = 1 then
         begin
 					CurrAction:= GetBoard;
           if QueenHereCounter = 0 then
@@ -411,7 +414,7 @@ end;
 
 procedure TQueenForm.BoardSizeEditChange(Sender: TObject);
 begin
-  showmessage('change');
+//  showmessage('change');
   SetBoardSize(BoardSizeEdit.Value);
 end;
 

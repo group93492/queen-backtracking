@@ -1,8 +1,8 @@
 object QueenForm: TQueenForm
   Left = 192
   Top = 225
-  Width = 1181
-  Height = 722
+  Width = 1154
+  Height = 725
   Caption = 'QueenForm'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -22,8 +22,8 @@ object QueenForm: TQueenForm
     Caption = #1051#1086#1075
   end
   object Label2: TLabel
-    Left = 832
-    Top = 104
+    Left = 792
+    Top = 96
     Width = 313
     Height = 13
     Alignment = taCenter
@@ -39,7 +39,7 @@ object QueenForm: TQueenForm
   object LogMemo: TMemo
     Left = 0
     Top = 478
-    Width = 1157
+    Width = 1146
     Height = 220
     Align = alBottom
     ScrollBars = ssVertical
@@ -106,8 +106,8 @@ object QueenForm: TQueenForm
     OnClick = StopCheckBoxClick
   end
   object SolutionsList: TListBox
-    Left = 832
-    Top = 120
+    Left = 792
+    Top = 112
     Width = 313
     Height = 353
     Font.Charset = DEFAULT_CHARSET
@@ -136,7 +136,7 @@ object QueenForm: TQueenForm
     MaxValue = 10
     MinValue = 1
     TabOrder = 8
-    Value = 5
+    Value = 1
     OnChange = BoardSizeEditChange
   end
   object Timer1: TTimer
