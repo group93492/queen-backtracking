@@ -9,7 +9,9 @@ uses
 const
   _CellWidth = 60;
   _CellHeight = 60;
-  BoardSize = 5;
+  _IndentLeft  = 15;
+  _IndentTop  = 15;
+  BoardSize = 6;
 
 type
   TQueenAction = (GetBoard, CheckingIfSolution, FindPlaceToNewQueen);
@@ -21,23 +23,21 @@ type
     Button2: TButton;
     Button3: TButton;
     Label1: TLabel;
-    BoardPanel: TPanel;
     ScrollBox: TScrollBox;
     Image: TImage;
     StopCheckBox: TCheckBox;
     SolutionsList: TListBox;
     ResetButton: TButton;
     Label2: TLabel;
+    VisualBoard: TImage;
     procedure Button1Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure StopCheckBoxClick(Sender: TObject);
     procedure ResetButtonClick(Sender: TObject);
   private
-    VisualBoard: array[1..BoardSize,1..BoardSize] of TImage;
     SolutionCounter: integer;             {счЄтчик количества решений}
     board: TBoard;          {собственно доска, тип объ€влен в модуле Stacks}
     Stack: PStack;              {собственно указатель на стек. тип объ€влен в модуле Stacks}
@@ -65,26 +65,80 @@ implementation
 
 { TQueenForm }
 
+procedure ClearCanvas(Canvas: TCanvas);
+var
+  o_brush,o_pen: TColor;
+begin
+  o_brush:=Canvas.Brush.Color;
+  o_pen:=Canvas.Pen.Color;
+  Canvas.Pen.Color:=clWhite;
+  Canvas.Brush.Color:=clWhite;
+  Canvas.Rectangle(Canvas.ClipRect);
+  Canvas.Pen.Color:=o_pen;
+  Canvas.Brush.Color:=o_brush;
+end;
+
+
 procedure TQueenForm.DrawBoard(board: TBoard);
+//быдлорисовка шахматного пол€. быдло-пребыдло.
+//но мне нравитс€ :3
 const
   GlyphDir = 'glyph\';
+  chars = 'abcdefghij';
 var
   i,j: byte;
-  BlackCell: byte;
+  BlackCell: boolean;
   FileName: string;
+  TempBMP: TBitmap;
 begin
-  {output board into BoardPanel}
+  {output board into VisualBoard - TImage}
+  TempBMP:=TBitmap.Create;
+  ClearCanvas(VisualBoard.Canvas);
+  BlackCell:=False;
+  //draw cells of board
   for i:=1 to BoardSize do
+  begin
     for j:=1 to BoardSize do
     begin
-      BlackCell:= ((i+j) mod 2);
-      case board[i,j] of
-        cQueen: FileName:= Format('queen-%d.jpg',[BlackCell]);
-        cFree: FileName:= Format('free-%d.jpg',[BlackCell]);
-        cUnderAttack: FileName:= Format('underattack-%d.jpg',[BlackCell]);
+      case board[j,i] of    {ктати если сделать board[i,j] - то визуально ферзи будут расставл€тьс€ по столбцам}
+        cQueen: FileName:= Format('queen-%d.bmp',[ord(BlackCell)]);
+        cFree: FileName:= Format('free-%d.bmp',[ord(BlackCell)]);
+        cUnderAttack: FileName:= Format('underattack-%d.bmp',[ord(BlackCell)]);
       end;
-      VisualBoard[i,j].Picture.LoadFromFile(GlyphDir + FileName);
+      TempBMP.LoadFromFile(GlyphDir + FileName);
+     { VisualBoard.Canvas.CopyRect(rect(i*_CellWidth, j*_CellHeight, (i+1)*_CellWidth, (j+1)*_CellHeight),
+                                  TempBMP.Canvas,
+                                  rect(0, 0, _CellWidth, _CellHeight)
+                                  );                              }
+      BitBlt(VisualBoard.Canvas.Handle,
+             _IndentLeft + (i-1)*_CellWidth, _IndentTop + (j-1)*_CellHeight,
+             _CellWidth, _CellHeight,
+             TempBMP.Canvas.Handle,
+             0, 0, SRCCOPY);
+      BlackCell:= not BlackCell;
     end;
+    if (BoardSize mod 2) = 0 then
+      BlackCell:=not BlackCell;
+  end;
+
+  //draw captions for rows and columns
+  for i:=1 to BoardSize do
+  begin
+    With VisualBoard.Canvas do
+    begin
+      Font.Size:= 9;
+      Font.Style:=Font.Style + [fsBold];
+      TextOut(_IndentLeft + (i-1)*_CellWidth + (_CellWidth - TextWidth(chars[i])) div 2,
+              (_IndentTop - TextHeight(chars[i])) div 2,
+              chars[i]
+              );          {columns}
+      TextOut((_IndentLeft - TextWidth(inttostr(BoardSize - i + 1))) div 2,
+              _IndentTop + (i-1)*_CellHeight + (_CellHeight - TextHeight(inttostr(BoardSize - i + 1))) div 2,
+              inttostr(BoardSize - i + 1)
+              );           {rows}
+    end;
+  end;
+  TempBMP.Free;
 end;
 
 function TQueenForm.ClearBoard: TBoard;
@@ -167,28 +221,12 @@ begin
 end;
 
 procedure TQueenForm.FormCreate(Sender: TObject);
-var
-  i,j: byte;
 begin
   FirstIteration:=True;
   StopIfFoundSolution:= True;
   SolutionCounter:=0;
-  BoardPanel.Width:= BoardSize * _CellWidth;
-  BoardPanel.Height:= BoardSize * _CellHeight;
-  for i:=1 to BoardSize do
-    for j:=1 to BoardSize do
-      begin
-        VisualBoard[i,j]:=TImage.Create(self);
-        with VisualBoard[i,j] do
-        begin
-          Parent:=BoardPanel;
-          Left:= (j-1)*_CellWidth;
-          Top:= (i-1)*_CellHeight;
-          Width:= _CellWidth;
-          Height:= _CellHeight;
-          AutoSize:= True;
-        end;
-      end;
+  VisualBoard.Width:= BoardSize * _CellWidth + _IndentLeft;
+  VisualBoard.Height:= BoardSize  * _CellHeight + _IndentTop;
   Tree.ImageInit;
 end;
 
@@ -248,7 +286,7 @@ begin
 				PopStack (Stack, currQueen, board, PrevAbsBoardPos);
         DrawBoard(board);            //необ€зательна€ строка кажись
 				CurrAction:= CheckingIfSolution;
-				itr:= 1;
+				itr:= BoardSize;
 			end;
 		
 		CheckingIfSolution:
@@ -281,7 +319,7 @@ begin
 					PushStack (Stack, CurrQueen + 1, copy, CurrAbsBoardPos (CurrQueen, QueenHereCounter, PrevAbsBoardPos));
           DrawUnit (CurrQueen, QueenHereCounter, PrevAbsBoardPos, itr); 
 				end;
-				if itr = BoardSize then
+				if itr = 0 then
         begin
 					CurrAction:= GetBoard;
           if QueenHereCounter = 0 then
@@ -289,7 +327,7 @@ begin
           QueenHereCounter:= 0;
         end
 				else
-					Inc (itr);
+				  Dec(itr);
 			end;
 	end;
 
@@ -297,15 +335,6 @@ begin
   //DrawBoard(board);
   LogMemo.Lines.Add ('</Iteration>');
   result:= False;
-end;
-
-procedure TQueenForm.FormDestroy(Sender: TObject);
-var
-  i,j: byte;
-begin
-  for i:=1 to BoardSize do
-    for j:=1 to BoardSize do
-      VisualBoard[i,j].Free;
 end;
 
 procedure TQueenForm.StopCheckBoxClick(Sender: TObject);

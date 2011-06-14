@@ -12,7 +12,6 @@ object QueenForm: TQueenForm
   Font.Style = []
   OldCreateOrder = False
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -31,10 +30,16 @@ object QueenForm: TQueenForm
     AutoSize = False
     Caption = #1057#1087#1080#1089#1086#1082' '#1085#1072#1081#1076#1077#1085#1085#1099#1093' '#1088#1077#1096#1077#1085#1080#1081
   end
+  object VisualBoard: TImage
+    Left = 0
+    Top = 0
+    Width = 465
+    Height = 449
+  end
   object LogMemo: TMemo
     Left = 0
     Top = 478
-    Width = 1156
+    Width = 1157
     Height = 220
     Align = alBottom
     ScrollBars = ssVertical
@@ -70,19 +75,12 @@ object QueenForm: TQueenForm
     WordWrap = True
     OnClick = Button3Click
   end
-  object BoardPanel: TPanel
-    Left = 0
-    Top = 0
-    Width = 465
-    Height = 465
-    TabOrder = 4
-  end
   object ScrollBox: TScrollBox
     Left = 496
     Top = 264
     Width = 286
     Height = 201
-    TabOrder = 5
+    TabOrder = 4
     object Image: TImage
       Left = 5
       Top = 5
@@ -98,7 +96,7 @@ object QueenForm: TQueenForm
     Caption = #1054#1089#1090#1072#1085#1072#1074#1083#1080#1074#1072#1090#1100#1089#1103' '#1087#1086#1089#1083#1077' '#1085#1072#1093#1086#1078#1076#1077#1085#1080#1103' '#1088#1077#1096#1077#1085#1080#1103
     Checked = True
     State = cbChecked
-    TabOrder = 6
+    TabOrder = 5
     WordWrap = True
     OnClick = StopCheckBoxClick
   end
@@ -114,7 +112,7 @@ object QueenForm: TQueenForm
     Font.Style = []
     ItemHeight = 16
     ParentFont = False
-    TabOrder = 7
+    TabOrder = 6
   end
   object ResetButton: TButton
     Left = 544
@@ -122,7 +120,7 @@ object QueenForm: TQueenForm
     Width = 145
     Height = 41
     Caption = #1089#1073#1088#1086#1089#1080#1090#1100' '#1094#1080#1082#1083
-    TabOrder = 8
+    TabOrder = 7
     OnClick = ResetButtonClick
   end
   object Timer1: TTimer

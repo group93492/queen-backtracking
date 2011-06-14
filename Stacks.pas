@@ -3,7 +3,7 @@ unit stacks;
 interface
  
  const
-	BoardSize = 5;
+	BoardSize = 8;
 
  type
 	TCell = (cQueen, cUnderAttack, cFree);
