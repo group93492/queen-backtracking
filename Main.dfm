@@ -39,7 +39,7 @@ object QueenForm: TQueenForm
   object LogMemo: TMemo
     Left = 0
     Top = 478
-    Width = 1156
+    Width = 1157
     Height = 220
     Align = alBottom
     ScrollBars = ssVertical

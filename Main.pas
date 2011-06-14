@@ -223,8 +223,8 @@ begin
   if IterateS then
   begin
     StopTimer;
-    LogMemo.Lines.Add ('EndCycle');
-    LogMemo.Lines.Add(Format ('%d solutions',[SolutionCounter]));
+    LogMemo.Lines.Add('Цикл завершён.');
+    LogMemo.Lines.Add(Format('Найдено %d решений',[SolutionCounter]));
   end;
 end;
 
@@ -245,8 +245,8 @@ procedure TQueenForm.Button2Click(Sender: TObject);
 begin
   if IterateS then
   begin
-    LogMemo.Lines.Add('EndCycle');
-    LogMemo.Lines.Add(Format('%d solutions',[SolutionCounter]));
+    LogMemo.Lines.Add('Цикл завершён.');
+    LogMemo.Lines.Add(Format('Найдено %d решений',[SolutionCounter]));
   end;
 end;
 
@@ -255,11 +255,13 @@ var
   c: boolean;
 begin
   c:=False;
-    while not c do
-    begin
-      c:=IterateS;
-      application.ProcessMessages;
-    end;
+  while not c do
+  begin
+    c:=IterateS;
+    Application.ProcessMessages;
+  end;
+  LogMemo.Lines.Add('Цикл завершён.');
+  LogMemo.Lines.Add(Format('Найдено %d решений',[SolutionCounter]));
 end;
 
 procedure TQueenForm.SetBoardSize (Value: byte);
@@ -279,13 +281,15 @@ function TQueenForm.IterateS: boolean;
  основой создания этой процедуры.
 
  возвращает True, если цикл завершён}
+const
+  chars= 'ABCDEFGHIJ';
 var
 	copy: TBoard;
 begin
-  LogMemo.Lines.Add('<Iteration>');
+  LogMemo.Lines.Add('<Начало итерации.>');
 	if FirstIteration then
 	begin
-    LogMemo.Lines.Add ('It''s a First Iteration');
+    LogMemo.Lines.Add ('Это первая итерация.');
     CreateStack (Stack);
     PrevAbsBoardPos:= 1;
     PushStack (Stack, 1, ClearBoard, PrevAbsBoardPos);
@@ -294,29 +298,29 @@ begin
     QueenHereCounter:= 0; //порядковый номер фезря, который можно поставить на текущей строке
     DrawUnit (1, 1, PrevAbsBoardPos, 1);
 	end;
-	
+
 	case CurrAction of
 		GetBoard:
 			begin
-        LogMemo.Lines.Add ('Getting board from Stack');
+        LogMemo.Lines.Add('Получаем текущую расстановку из стека.');
 				if Stack = nil then
 				begin
-          LogMemo.Lines.Add ('quiting from cycle');
-					Result:= True;
-					Exit;
+          LogMemo.Lines.Add('Стек пуст, цикл завершается.');
+					result:=True;
+					exit;
 				end;
 				PopStack (Stack, currQueen, board, PrevAbsBoardPos);
-        DrawBoard (board);            //необязательная строка кажись
+        DrawBoard(board);            //необязательная строка кажись
 				CurrAction:= CheckingIfSolution;
 				itr:= BoardSize;
 			end;
-		
+
 		CheckingIfSolution:
 			begin
-        LogMemo.Lines.Add ('checking if a new solution');
+        LogMemo.Lines.Add ('Проверяем, является ли текущая расстановка готовым решением.');
 				if CurrQueen = BoardSize + 1 then	{we got a new solution, lets remind about it}
 				begin
-					LogMemo.Lines.Add ('we fucking got a new solution');
+					LogMemo.Lines.Add ('Проверка пройдена, у нас есть решение.');
           WriteSolutionIntoList (board);
           MarkGoodThread (CurrQueen - 1, PrevAbsBoardPos);
           if StopIfFoundSolution then
@@ -325,24 +329,30 @@ begin
           CurrAction:= GetBoard;
 				end
 				else
+        begin
 					CurrAction:= FindPlaceToNewQueen;
+          LogMemo.Lines.Add (Format('Находим позицию для ферзя номер %d.',[CurrQueen]));
+        end;
 			end;
 
 		FindPlaceToNewQueen:
 			begin {what about skiping this part in timer and just show a free place to set?}
-        LogMemo.Lines.Add ('Finding new place for the ' + inttostr (CurrQueen) + 'th queen');
+        //LogMemo.Lines.Add (Format('Находим позицию для ферзя номер %d.',[CurrQueen]));
 				if board[currQueen, itr] = cFree then
 				begin
-          LogMemo.Lines.Add ('Found place. Adding it to the Queue');
+          LogMemo.Lines.Add (Format('Ферзя можно поставить на позицию %s%d.',[chars[itr],BoardSize - currQueen + 1]));
+          LogMemo.Lines.Add('Добавляем его в расстановку и добавляем расстановку в стек.');
 					copy:= board;
 					SetQueenOnBoard (copy, currQueen, itr);
           //{}DrawBoard(copy);
           Inc (QueenHereCounter);
 					PushStack (Stack, CurrQueen + 1, copy, CurrAbsBoardPos (CurrQueen, QueenHereCounter, PrevAbsBoardPos));
-          DrawUnit (CurrQueen, QueenHereCounter, PrevAbsBoardPos, itr); 
+
+          DrawUnit (CurrQueen, QueenHereCounter, PrevAbsBoardPos, itr);
 				end;
 				if itr = 1 then
         begin
+          LogMemo.Lines.Add('Поиск позиции для нового ферзя завершён.');
 					CurrAction:= GetBoard;
           if QueenHereCounter = 0 then
             MarkBadThread (CurrQueen - 1, PrevAbsBoardPos);
@@ -355,7 +365,7 @@ begin
 
 	//write_board;
   //DrawBoard(board);
-  LogMemo.Lines.Add ('</Iteration>');
+  LogMemo.Lines.Add ('<Конец итерации.>');
   result:= False;
 end;
 
