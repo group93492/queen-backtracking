@@ -22,9 +22,9 @@ object QueenForm: TQueenForm
     Caption = #1051#1086#1075
   end
   object Label2: TLabel
-    Left = 792
-    Top = 64
-    Width = 353
+    Left = 832
+    Top = 104
+    Width = 313
     Height = 13
     Alignment = taCenter
     AutoSize = False
@@ -46,40 +46,45 @@ object QueenForm: TQueenForm
     TabOrder = 0
   end
   object Button1: TButton
-    Left = 528
-    Top = 64
-    Width = 177
-    Height = 49
-    Caption = #1079#1072#1087#1091#1089#1090#1080#1090#1100' '#1074#1099#1087#1086#1083#1085#1077#1085#1080#1077' '#1080#1090#1077#1088#1072#1094#1080#1081'  '#1087#1086' '#1090#1072#1081#1084#1077#1088#1091
+    Left = 488
+    Top = 48
+    Width = 241
+    Height = 33
+    Caption = #1047#1072#1087#1091#1089#1090#1080#1090#1100' '#1072#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1086#1077' '#1074#1099#1087#1086#1083#1085#1077#1085#1080#1077
     TabOrder = 1
     WordWrap = True
     OnClick = Button1Click
   end
   object Button2: TButton
-    Left = 560
-    Top = 120
-    Width = 113
-    Height = 49
-    Caption = #1074#1099#1087#1086#1083#1085#1080#1090#1100' '#1086#1076#1085#1091' '#1080#1090#1077#1088#1072#1094#1080#1102
+    Left = 488
+    Top = 88
+    Width = 241
+    Height = 33
+    Caption = #1042#1099#1087#1086#1083#1085#1080#1090#1100' '#1086#1076#1085#1091' '#1080#1090#1077#1088#1072#1094#1080#1102
     TabOrder = 2
     WordWrap = True
     OnClick = Button2Click
   end
   object Button3: TButton
-    Left = 552
-    Top = 177
-    Width = 123
-    Height = 56
-    Caption = #1074#1099#1087#1086#1083#1085#1080#1090#1100' '#1080#1090#1077#1088#1072#1094#1080#1080' '#1076#1086' '#1089#1072#1084#1086#1075#1086' '#1082#1086#1085#1094#1072
+    Left = 488
+    Top = 129
+    Width = 241
+    Height = 32
+    Hint = 
+      #1054#1089#1090#1086#1088#1086#1078#1085#1086'! '#1055#1088#1086#1075#1088#1072#1084#1084#1072' '#1087#1077#1088#1077#1089#1090#1072#1085#1077#1090' '#1088#1077#1072#1075#1080#1088#1086#1074#1072#1090#1100' '#1085#1072#13#10#1076#1077#1081#1089#1090#1074#1080#1103' '#1087#1086#1083#1100#1079#1086#1074 +
+      #1072#1090#1077#1083#1103' '#1076#1086' '#1079#1072#1074#1077#1088#1096#1077#1085#1080#1103' '#1094#1080#1082#1083#1072'.'
+    Caption = #1042#1099#1087#1086#1083#1085#1080#1090#1100' '#1080#1090#1077#1088#1072#1094#1080#1080' '#1076#1086' '#1082#1086#1085#1094#1072
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 3
     WordWrap = True
     OnClick = Button3Click
   end
   object ScrollBox: TScrollBox
-    Left = 496
-    Top = 264
-    Width = 286
-    Height = 201
+    Left = 480
+    Top = 168
+    Width = 302
+    Height = 297
     TabOrder = 4
     object Image: TImage
       Left = 5
@@ -89,8 +94,8 @@ object QueenForm: TQueenForm
     end
   end
   object StopCheckBox: TCheckBox
-    Left = 752
-    Top = 16
+    Left = 736
+    Top = 48
     Width = 153
     Height = 33
     Caption = #1054#1089#1090#1072#1085#1072#1074#1083#1080#1074#1072#1090#1100#1089#1103' '#1087#1086#1089#1083#1077' '#1085#1072#1093#1086#1078#1076#1077#1085#1080#1103' '#1088#1077#1096#1077#1085#1080#1103
@@ -101,10 +106,10 @@ object QueenForm: TQueenForm
     OnClick = StopCheckBoxClick
   end
   object SolutionsList: TListBox
-    Left = 792
-    Top = 80
-    Width = 353
-    Height = 393
+    Left = 832
+    Top = 120
+    Width = 313
+    Height = 353
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
@@ -115,19 +120,30 @@ object QueenForm: TQueenForm
     TabOrder = 6
   end
   object ResetButton: TButton
-    Left = 544
+    Left = 488
     Top = 8
-    Width = 145
-    Height = 41
-    Caption = #1089#1073#1088#1086#1089#1080#1090#1100' '#1094#1080#1082#1083
+    Width = 241
+    Height = 33
+    Caption = #1057#1073#1088#1086#1089' '#1094#1080#1082#1083#1072
     TabOrder = 7
     OnClick = ResetButtonClick
+  end
+  object BoardSizeEdit: TSpinEdit
+    Left = 936
+    Top = 16
+    Width = 121
+    Height = 22
+    MaxValue = 10
+    MinValue = 1
+    TabOrder = 8
+    Value = 5
+    OnChange = BoardSizeEditChange
   end
   object Timer1: TTimer
     Enabled = False
     Interval = 50
     OnTimer = Timer1Timer
-    Left = 712
-    Top = 80
+    Left = 736
+    Top = 8
   end
 end

@@ -4,14 +4,14 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Grids, ExtCtrls, Stacks, Jpeg, Tree;
+  Dialogs, StdCtrls, Grids, ExtCtrls, Stacks, Jpeg, Tree, Spin;
 
 const
   _CellWidth = 60;
   _CellHeight = 60;
   _IndentLeft  = 15;
   _IndentTop  = 15;
-  BoardSize = 6;
+  defBoardSize = 5;
 
 type
   TQueenAction = (GetBoard, CheckingIfSolution, FindPlaceToNewQueen);
@@ -30,6 +30,7 @@ type
     ResetButton: TButton;
     Label2: TLabel;
     VisualBoard: TImage;
+    BoardSizeEdit: TSpinEdit;
     procedure Button1Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -37,6 +38,9 @@ type
     procedure Button3Click(Sender: TObject);
     procedure StopCheckBoxClick(Sender: TObject);
     procedure ResetButtonClick(Sender: TObject);
+    procedure StartTimer;
+    procedure StopTimer;
+    procedure BoardSizeEditChange(Sender: TObject);
   private
     SolutionCounter: integer;             {счётчик количества решений}
     board: TBoard;          {собственно доска, тип объявлен в модуле Stacks}
@@ -52,12 +56,14 @@ type
     procedure DrawBoard(board: TBoard);                         {вывести состояние доски в Grid}
     function IterateS: boolean;                                 {собственно сама ключевая процедура}
     procedure WriteSolutionIntoList(board: TBoard);
+    procedure SetBoardSize(Value: byte);
   public
     { Public declarations }
   end;
 
 var
   QueenForm: TQueenForm;
+  BoardSize: byte;
 
 implementation
 
@@ -93,7 +99,9 @@ var
 begin
   {output board into VisualBoard - TImage}
   TempBMP:=TBitmap.Create;
-  ClearCanvas(VisualBoard.Canvas);
+  VisualBoard.Width:= BoardSize * _CellWidth + _IndentLeft;
+  VisualBoard.Height:= BoardSize  * _CellHeight + _IndentTop;
+ // ClearCanvas(VisualBoard.Canvas);
   BlackCell:=False;
   //draw cells of board
   for i:=1 to BoardSize do
@@ -204,17 +212,16 @@ end;
 procedure TQueenForm.Button1Click(Sender: TObject);
 begin
   if timer1.Enabled then
-    button1.Caption:='запустить выполнение итераций  по таймеру'
+    StopTimer
   else
-    button1.Caption:='остановить выполнение итераций  по таймеру';
-  Timer1.enabled:= not Timer1.Enabled;
+    StartTimer;
 end;
 
 procedure TQueenForm.Timer1Timer(Sender: TObject);
 begin
   if IterateS then
   begin
-    timer1.enabled:=False;
+    StopTimer;
     LogMemo.Lines.Add('EndCycle');
     LogMemo.Lines.Add(Format('%d solutions',[SolutionCounter]));
   end;
@@ -225,8 +232,11 @@ begin
   FirstIteration:=True;
   StopIfFoundSolution:= True;
   SolutionCounter:=0;
-  VisualBoard.Width:= BoardSize * _CellWidth + _IndentLeft;
-  VisualBoard.Height:= BoardSize  * _CellHeight + _IndentTop;
+  BoardSizeEdit.MaxValue:= Stacks.maxBoardSize;
+  BoardSizeEdit.Value:= defBoardSize;
+  BoardSize:= defBoardSize;
+  board:=ClearBoard;
+  DrawBoard(board);
   Tree.ImageInit;
 end;
 
@@ -298,7 +308,7 @@ begin
           WriteSolutionIntoList (board);
           MarkGoodThread (CurrQueen - 1, PrevAbsBoardPos);
           if StopIfFoundSolution then
-            Timer1.Enabled:= False; //выключить таймер при нахождении решения
+            StopTimer; //выключить таймер при нахождении решения
           Inc (SolutionCounter);
           CurrAction:= GetBoard;
 				end
@@ -344,7 +354,9 @@ end;
 
 procedure TQueenForm.ResetButtonClick (Sender: TObject);
 begin
+  StopTimer;
   FirstIteration:= True;
+  SolutionCounter:=0;
   board:= ClearBoard;
   DrawBoard (board);
   SolutionsList.Clear;
@@ -355,16 +367,52 @@ end;
 
 procedure TQueenForm.WriteSolutionIntoList(board: TBoard);
 const
-  chars: array[1..10] of char = ('a','b','c','d','e','f','g','h','j','k');
+  chars= 'ABCDEFGHIJ';
 var
   i,j: byte;
   Solution: string;
 begin
-  for j:=1 to BoardSize do
-    for i:=1 to BoardSize do
+  for i:=1 to BoardSize do
+    for j:=1 to BoardSize do
       if board[i,j]= cQueen then
         Solution:= Solution + chars[j] + IntToStr (BoardSize - i + 1) + ' ';
   SolutionsList.Items.Add (Solution);
+end;
+
+procedure TQueenForm.StartTimer;
+begin
+  button1.Caption:='Остановить автоматическое выполнение';
+  Timer1.enabled:= True;
+end;
+
+procedure TQueenForm.StopTimer;
+begin
+  button1.Caption:='Запустить автоматическое выполнение';
+  Timer1.enabled:= False;
+end;
+
+procedure TQueenForm.SetBoardSize(Value: byte);
+begin
+  BoardSize:= Value;
+  if not FirstIteration then
+  begin
+    StopTimer;
+    FirstIteration:= True;
+    SolutionCounter:=0;
+    SolutionsList.Clear;
+    ClearStack (Stack);
+    Image.Canvas.Brush.Color := clWhite;
+    Image.Canvas.FillRect (Image.Canvas.ClipRect);
+  end;
+  board:= ClearBoard;
+  DrawBoard (board);
+  Tree.ImageInit;
+end;
+
+procedure TQueenForm.BoardSizeEditChange(Sender: TObject);
+begin
+  showmessage('change');
+  SetBoardSize(BoardSizeEdit.Value);
 end;
 
 end.

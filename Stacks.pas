@@ -3,11 +3,11 @@ unit stacks;
 interface
  
  const
-	BoardSize = 8;
+	maxBoardSize = 8;
 
  type
 	TCell = (cQueen, cUnderAttack, cFree);
-	TBoard = array[1..BoardSize, 1..BoardSize] of TCell;
+	TBoard = array[1..maxBoardSize, 1..maxBoardSize] of TCell;
 	PStack= ^TStack;	
 	TStack = record
        x: byte;
