@@ -1,8 +1,8 @@
 object QueenForm: TQueenForm
-  Left = 174
-  Top = 92
-  Width = 1181
-  Height = 722
+  Left = 93
+  Top = 7
+  Width = 1258
+  Height = 718
   Caption = 'QueenForm'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -16,13 +16,13 @@ object QueenForm: TQueenForm
   TextHeight = 13
   object Label1: TLabel
     Left = 4
-    Top = 465
+    Top = 515
     Width = 19
     Height = 13
     Caption = #1051#1086#1075
   end
   object Label2: TLabel
-    Left = 832
+    Left = 922
     Top = 104
     Width = 313
     Height = 13
@@ -31,22 +31,22 @@ object QueenForm: TQueenForm
     Caption = #1057#1087#1080#1089#1086#1082' '#1085#1072#1081#1076#1077#1085#1085#1099#1093' '#1088#1077#1096#1077#1085#1080#1081
   end
   object VisualBoard: TImage
-    Left = 0
-    Top = 0
-    Width = 476
-    Height = 471
+    Left = 10
+    Top = 10
+    Width = 541
+    Height = 496
   end
   object LogMemo: TMemo
     Left = 0
-    Top = 478
-    Width = 1157
-    Height = 220
+    Top = 533
+    Width = 1250
+    Height = 151
     Align = alBottom
     ScrollBars = ssVertical
     TabOrder = 0
   end
   object Button1: TButton
-    Left = 488
+    Left = 578
     Top = 48
     Width = 241
     Height = 33
@@ -56,7 +56,7 @@ object QueenForm: TQueenForm
     OnClick = Button1Click
   end
   object Button2: TButton
-    Left = 488
+    Left = 578
     Top = 88
     Width = 241
     Height = 33
@@ -66,7 +66,7 @@ object QueenForm: TQueenForm
     OnClick = Button2Click
   end
   object Button3: TButton
-    Left = 488
+    Left = 578
     Top = 129
     Width = 241
     Height = 32
@@ -81,10 +81,10 @@ object QueenForm: TQueenForm
     OnClick = Button3Click
   end
   object ScrollBox: TScrollBox
-    Left = 480
+    Left = 570
     Top = 168
-    Width = 302
-    Height = 297
+    Width = 336
+    Height = 338
     TabOrder = 4
     object Image: TImage
       Left = 5
@@ -94,7 +94,7 @@ object QueenForm: TQueenForm
     end
   end
   object StopCheckBox: TCheckBox
-    Left = 736
+    Left = 826
     Top = 48
     Width = 153
     Height = 33
@@ -106,7 +106,7 @@ object QueenForm: TQueenForm
     OnClick = StopCheckBoxClick
   end
   object SolutionsList: TListBox
-    Left = 832
+    Left = 922
     Top = 120
     Width = 313
     Height = 353
@@ -120,7 +120,7 @@ object QueenForm: TQueenForm
     TabOrder = 6
   end
   object ResetButton: TButton
-    Left = 488
+    Left = 578
     Top = 8
     Width = 241
     Height = 33
@@ -129,7 +129,7 @@ object QueenForm: TQueenForm
     OnClick = ResetButtonClick
   end
   object BoardSizeEdit: TSpinEdit
-    Left = 936
+    Left = 1026
     Top = 16
     Width = 121
     Height = 22
@@ -143,7 +143,7 @@ object QueenForm: TQueenForm
     Enabled = False
     Interval = 50
     OnTimer = Timer1Timer
-    Left = 736
+    Left = 826
     Top = 8
   end
 end
