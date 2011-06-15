@@ -129,8 +129,8 @@ begin
     end;
     with Main.QueenForm.ScrollBox do //показываем изменения в дереве
     begin
-      HorzScrollBar.Position:= PrevCoord.X - Width div 2;
-      VertScrollBar.Position:= PrevCoord.Y - Height div 2;
+      HorzScrollBar.Position:= CurrCoord.X - Width div 2;
+      VertScrollBar.Position:= CurrCoord.Y - Height div 2;
     end;
   end;
 end;
@@ -177,19 +177,5 @@ begin
     end;
   end;
 end;
-
-{procedure MarkTrueThread (Board: Stacks.TBoard; Color: TColor);
-var
-  itrCol, itrRow: smallint;
-begin
-  Main.QueenForm.Image.Canvas.Pen.Color:= MarkColor;
-  for itrCol:= 1 to BoardSize do
-    for itrRow:= 1 to BoardSize do 
-      if Board[itrCol][itrRow] = cQueen then
-      begin
-        DrawUnit (itrCol,     
-      end;
-  Main.QueenForm.Image.Canvas.Pen.Color:= NormalColor;
-end;}
 
 end.
