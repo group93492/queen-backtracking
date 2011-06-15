@@ -87,8 +87,11 @@ begin
 end; 
 
 procedure ImageInit;
+var
+  Can: boolean;
 begin
-  if CanDrawTree (BoardSize) then
+  Can:=CanDrawTree (BoardSize);
+  if Can then
     with Main.QueenForm.Image do
     begin
       Canvas.Brush.Color := clWhite;
@@ -97,6 +100,7 @@ begin
       Width:= MaxVariants (BoardSize) * LineWidth + Start.X;
       Canvas.Font.Color:= clBlue;
     end;
+  Main.QueenForm.ScrollBox.Visible:=Can;
 end;
 
 function CurrAbsBoardPos (CurrLevel, CurrBoardPos, PrevAbsBoardPos: integer): integer;

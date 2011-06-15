@@ -11,7 +11,7 @@ const
   _CellHeight = 60;
   _IndentLeft  = 15;
   _IndentTop  = 15;
-  defBoardSize = 4;
+  defBoardSize = 5;
 
 type
   TQueenAction = (GetBoard, CheckingIfSolution, FindPlaceToNewQueen);
@@ -31,6 +31,7 @@ type
     Label2: TLabel;
     VisualBoard: TImage;
     BoardSizeEdit: TSpinEdit;
+    Label3: TLabel;
     procedure Button1Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -41,6 +42,7 @@ type
     procedure StartTimer;
     procedure StopTimer;
     procedure BoardSizeEditChange(Sender: TObject);
+    procedure BoardSizeEditKeyPress(Sender: TObject; var Key: Char);
   private
     SolutionCounter: integer;             {счётчик количества решений}
     board: TBoard;          {собственно доска, тип объявлен в модуле Stacks}
@@ -224,7 +226,7 @@ begin
   begin
     StopTimer;
     LogMemo.Lines.Add('Цикл завершён.');
-    LogMemo.Lines.Add(Format('Найдено %d решений',[SolutionCounter]));
+    LogMemo.Lines.Add(Format('Найдено %d решений(я)',[SolutionCounter]));
   end;
 end;
 
@@ -239,6 +241,8 @@ begin
   board:= ClearBoard;
   DrawBoard (board);
   Tree.ImageInit;
+  Application.HintPause:=50;
+  Application.HintHidePause:=5000;
 end;
 
 procedure TQueenForm.Button2Click(Sender: TObject);
@@ -246,7 +250,7 @@ begin
   if IterateS then
   begin
     LogMemo.Lines.Add('Цикл завершён.');
-    LogMemo.Lines.Add(Format('Найдено %d решений',[SolutionCounter]));
+    LogMemo.Lines.Add(Format('Найдено %d решений(я)',[SolutionCounter]));
   end;
 end;
 
@@ -261,7 +265,7 @@ begin
     Application.ProcessMessages;
   end;
   LogMemo.Lines.Add('Цикл завершён.');
-  LogMemo.Lines.Add(Format('Найдено %d решений',[SolutionCounter]));
+  LogMemo.Lines.Add(Format('Найдено %d решений(я)',[SolutionCounter]));
 end;
 
 procedure TQueenForm.SetBoardSize (Value: byte);
@@ -290,6 +294,7 @@ begin
 	if FirstIteration then
 	begin
     LogMemo.Lines.Add ('Это первая итерация.');
+    LogMemo.Lines.Add('Добавляем в стек пустую расстановку');
     CreateStack (Stack);
     PrevAbsBoardPos:= 1;
     PushStack (Stack, 1, ClearBoard, PrevAbsBoardPos);
@@ -349,7 +354,9 @@ begin
 					PushStack (Stack, CurrQueen + 1, copy, CurrAbsBoardPos (CurrQueen, QueenHereCounter, PrevAbsBoardPos));
 
           DrawUnit (CurrQueen, QueenHereCounter, PrevAbsBoardPos, itr);
-				end;
+				end
+        else
+          LogMemo.Lines.Add (Format('Нельзя ставить ферзя на позицию %s%d.',[chars[itr],BoardSize - currQueen + 1]));
 				if itr = 1 then
         begin
           LogMemo.Lines.Add('Поиск позиции для нового ферзя завершён.');
@@ -363,7 +370,6 @@ begin
 			end;
 	end;
 
-	//write_board;
   //DrawBoard(board);
   LogMemo.Lines.Add ('<Конец итерации.>');
   result:= False;
@@ -415,6 +421,11 @@ end;
 procedure TQueenForm.BoardSizeEditChange(Sender: TObject);
 begin
   SetBoardSize (BoardSizeEdit.Value);
+end;
+
+procedure TQueenForm.BoardSizeEditKeyPress(Sender: TObject; var Key: Char);
+begin
+  Key:=#0;
 end;
 
 end.
