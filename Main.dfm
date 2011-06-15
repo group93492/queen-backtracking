@@ -58,6 +58,7 @@ object QueenForm: TQueenForm
     ReadOnly = True
     ScrollBars = ssVertical
     TabOrder = 0
+    OnKeyDown = LogMemoKeyDown
   end
   object Button1: TButton
     Left = 530

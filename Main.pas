@@ -43,12 +43,14 @@ type
     procedure StopTimer;
     procedure BoardSizeEditChange(Sender: TObject);
     procedure BoardSizeEditKeyPress(Sender: TObject; var Key: Char);
+    procedure LogMemoKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     SolutionCounter: integer;             {счЄтчик количества решений}
     board: TBoard;          {собственно доска, тип объ€влен в модуле Stacks}
     Stack: PStack;              {собственно указатель на стек. тип объ€влен в модуле Stacks}
     CurrQueen: byte;        {текущий расставл€емый ферзь}
-    itr, QueenHereCounter: byte;              {переменна€-итератор (нужна дл€ поиска места установки нового ферз€)}
+    itr, QueenHereCounter, Egg: byte;              {переменна€-итератор (нужна дл€ поиска места установки нового ферз€)}
     PrevAbsBoardPos: integer; //позици€ предыдущего ферз€ на предыдущей линии (нужно дл€ дерева)
     CurrAction: TQueenAction;   {действие, выполн€емой в данный момент}
     FirstIteration: boolean;    {флаг, указывающий - будет ли следующа€ выполн€ема€ итераци€ - первой во всЄм бектрекинге}
@@ -375,6 +377,11 @@ begin
   result:= False;
 end;
 
+procedure EasterEgg;
+begin
+  Application.MessageBox ('Developers:' + #13#10 + '           upcdownc' + #13#10 + '           freemanoid' + #13#10 + #13#10 + 'Github: http://github.com/group93492', 'Easter Egg');
+end;
+
 procedure TQueenForm.StopCheckBoxClick(Sender: TObject);
 begin
   StopIfFoundSolution:=StopCheckBox.Checked;
@@ -426,6 +433,25 @@ end;
 procedure TQueenForm.BoardSizeEditKeyPress(Sender: TObject; var Key: Char);
 begin
   Key:=#0;
+end;
+
+procedure TQueenForm.LogMemoKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+const
+  PassPhrase = '93492';
+  PhraseLength = Length (PassPhrase);
+begin
+  if Key = Ord(PassPhrase[Egg + 1]) then 
+  begin
+    Inc (Egg);
+    if Egg = PhraseLength then
+    begin
+      EasterEgg;
+      Egg:= 0;
+    end;
+  end
+  else
+    Egg:= 0;
 end;
 
 end.
